@@ -1,0 +1,32 @@
+<Window x:Class="WpfApplication1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApplication1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="325" Width="410">
+    <Grid Margin="0,0,9,12">
+        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="209" Margin="10,31,0,0" Stroke="Black" VerticalAlignment="Top" Width="359"/>
+        
+        <Label x:Name="label" Content="Character Set" HorizontalAlignment="Left" Margin="25,51,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="label1" Content="C++ Project Settings" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="199"/>
+        <Label x:Name="label2" Content="Sub System" HorizontalAlignment="Left" Margin="174,51,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="label4" Content="Name" HorizontalAlignment="Left" Margin="18,177,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label3" Content="Path" HorizontalAlignment="Left" Margin="18,202,0,0" VerticalAlignment="Top"/>
+
+        <ComboBox x:Name="ComboCharSet" HorizontalAlignment="Left" Margin="25,77,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox x:Name="ComboSubSystem" HorizontalAlignment="Left" Margin="174,77,0,0" VerticalAlignment="Top" Width="120"/>
+        <CheckBox x:Name="CheckWinsock" Content="Use Winsock" HorizontalAlignment="Left" Margin="25,118,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="CheckQt" Content="Use QT" HorizontalAlignment="Left" Margin="174,118,0,0" VerticalAlignment="Top" />
+        
+        <TextBox x:Name="TextPath"  Text="" HorizontalAlignment="Left" Height="19" Margin="66,205,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="191"/>
+        
+        <TextBox x:Name="TextName"  Text="" HorizontalAlignment="Left" Height="19" Margin="66,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="191"/>
+        
+        <Button x:Name="BtnBrowse" Content="Browse..." HorizontalAlignment="Left" Margin="281,204,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="BtnGenerate" Content="Generate" HorizontalAlignment="Left" Margin="294,254,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="BtnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="197,254,0,0" VerticalAlignment="Top" Width="75"/>
+
+    </Grid>
+</Window>

@@ -1,2 +1,2 @@
-# PowerShell.Sandbox
-Sandbox : Unofficial projects and WIP
+# Powershell.MicroProjects
+List of Micro Projects
