@@ -25,8 +25,19 @@ $ScriptBlockMessageBox = "H4sIAAAAAAAACu0ca28bufF7gPwHYk+AJZy1ttMmLYxTcX5ejMYPWL
 
 function PopupMessage{
 [CmdletBinding(SupportsShouldProcess)]
-param ()  
-    $Source = "$PWD\55.jpg"
+param () 
+    $Url = "https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/Placeholder/img/55.jpg" 
+    $Source = $ENV:TMP_IMG_PATH
+    if($Source -eq $null){
+        $Dir = New-TemporaryDirectory
+        $Source = Join-Path $Dir '55.jpg'
+        $ENV:TMP_IMG_PATH = $Source
+        [environment]::SetEnvironmentVariable('TMP_IMG_PATH',"$Source",'Process')
+    }
+    if(-not(Test-Path $Source)){
+        Get-OnlineFileNoCache $Url $Source    
+    }
+    
     [int]$FontSize = 16
     [string]$Color='DimGray'
     $Image = New-Object System.Windows.Controls.Image
@@ -71,11 +82,4 @@ $ScriptList | ForEach-Object {
     ConvertFrom-Base64CompressedScriptBlock -ScriptBlock $ScriptBlock | Invoke-Expression
 }
 
-$Source = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/Placeholder/img/55.jpg'
-$CurrentDir=Get-ScriptDirectory
-$rootPath = $CurrentDir | split-path
-
-Register-Assemblies | Out-Null
-NetGetFileNoCache $Source "$PWD\55.jpg"
-InvokeMissionImpossible
 PopupMessage
