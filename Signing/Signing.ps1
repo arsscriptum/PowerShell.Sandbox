@@ -17,13 +17,38 @@ class SignatureProperties
 }
 
 function Get-LocalSigningCert{
+    <#
+    .SYNOPSIS
+        Get signing certificate
+    .LINK
+        https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/Signing/Signing.ps1
+    #>    
+    
     $SignProps = [SignatureProperties]::new()
     $Instance=gci Cert:\CurrentUser\My -CodeSigningCert | where Thumbprint -eq "$($SignProps.ValidCertificate)"
     return $Instance
 }
 
-function Add-Signature([string]$Path)
-{
+function Add-Signature{
+    <#
+    .SYNOPSIS
+        Sign a script
+    .DESCRIPTION
+        Sign a script using a self-signed certificate
+    .PARAMETER Path
+        The Path of the script to sign
+    .EXAMPLE
+         Add-Signature -Path .\helloworld.ps1
+    .LINK
+        https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/Signing/Signing.ps1
+    #>
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Path
+    )
+
     try{
         $Ok = $False
         $ExceptMsg = ''
@@ -49,8 +74,23 @@ function Add-Signature([string]$Path)
     }
 }
 
-function Check-Signature([string]$Path)
-{
+function Check-Signature{
+    <#
+    .SYNOPSIS
+        Validate a script signature
+    .PARAMETER Path
+        The Path of the script to validate
+    .EXAMPLE
+         Check-Signature -Path .\helloworld.ps1
+    .LINK
+        https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/Signing/Signing.ps1
+    #>
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Path
+    )    
     try{
         $Ok = $False
         $ExceptMsg = ''        
