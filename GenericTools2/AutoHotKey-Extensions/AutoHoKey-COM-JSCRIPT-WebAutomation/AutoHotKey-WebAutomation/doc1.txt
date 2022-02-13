@@ -1,0 +1,898 @@
+Logo
+Log in with FacebookLog in with Twitter Sign In Create Account
+AUTOHOTKEY
+FORUMS
+MEMBERS
+Advanced
+placeholder
+THIS TOPIC
+FacebookTwitter
+AutoHotkey Community
+AutoHotkey
+Scripts and Functions
+View New Content
+Photo
+Automation IE7 Navigation and Scripting with Tabs
+Started by tank , Apr 09 2008 03:14 PM
+
+Page 1 of 15 1 2 3next »
+This topic is locked This topic is locked
+214 replies to this topic
+Poll: Do you find this group pf wrapper functions for IE Automation Usefull (35 member(s) have cast votes)
+Do you find this group pf wrapper functions for IE Automation Usefull
+no you suck (3 votes [8.33%])
+need better Documentation (10 votes [27.78%])
+What is DHTML i dont understand how this helps (4 votes [11.11%])
+I use Firefox this is a stupid idea (10 votes [27.78%])
+I know DHTML this is a reasonably good AHK adaption (2 votes [5.56%])
+This is the best DHTML too in the AHK Forum (7 votes [19.44%])
+
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+I have asked this thread be locked because it is outdated and i no longer have the time to keep up with it in the future please refer to <!-- m -->http://www.autohotke...pic.php?t=51020<!-- m -->
+
+
+
+
+
+
+
+
+Important **** if you have not copied these scripts since 7/12/2009 and are having trouble please re copy now
+Documentation/tutorial
+**********************************************************
+I have posted as a separate thread some documentation and COM\IE tutorials
+
+Included are some basic instructions for accessing DOM
+
+These are not wrapped this is a tutorial so that folks with questions can find there own answers
+<!-- m -->http://www.autohotke...pic.php?t=34972<!-- m -->
+
+**********************************************************
+Finally learned something worth posting .... maybe
+Firstly Credits.
+ahklerner: without his inject JS function i would have never really had a goal
+Lexikos for using small simple words and lots and lots of patience to really educate me in the most basic fashion in the most simple concepts of the webbrowser object
+Sean for his fantastic com work without which well so much would just not be possible with AHK.
+Actually to these three I owe my current career as this is the primary use in my job in automating several web based interfaces
+firstly for those wishing to learn or improve my code
+<!-- m -->http://msdn2.microso...y/aa752127.aspx<!-- m -->
+is what this is driven from
+
+and seans most excelent starting place for IE
+EDIT Found this after i posted the script
+it bears noting the Sean also has a different solution to the navigation thing
+<!-- m -->http://www.autohotke... ... hlight=ie7<!-- m -->
+<!-- m -->http://www.autohotke...topic19255.html<!-- m -->
+Com library required
+OK now to the meat
+
+IE7_Nav Edit thanks for the shortened version ahklerner
+EDIT: added the missing alt new window and tab thanks sean
+EDIT 5-30-2008 corrected a couple minor typos and released the doc and rdy objects
+EDIT 6-29-2008 thanks Lexikos corrected a few farely serious flaws
+
+EDIT 7-12-2009 Updated and replaced some IE7 functions with a more perfected function
+New single browser based function for all versions of IE
+
+/*
+Function written exclusively by Tank with thanks to Sean for creating the COM library
+Parameters
+pTitle				- 	Input (string) full or partial title case insensitive
+URL					-	Input (string) navigates to a Fully qualified URL
+DocumentComplete	-	Input (Bool) true advises the function to pause till any navigation is complete
+WebBrowser2			-	Output (integer) Interface pointer
+left				-	Input/Output (integer) pixels from left of screen that leftmost point of browser occupies 
+top					-	Input/Output (integer) pixels from top of screen that topmost point of browser occupies 
+height				-	Input/Output (integer) height in pixels
+width				-	Input/Output (integer) width in pixels
+MenuBar				-	Input/Output (Bool) returns -1 if true any value other than 0 sets to vis
+AddressBar			-	Input/Output (Bool) returns -1 if true any value other than 0 sets to vis
+StatusBar			-	Input/Output (Bool) returns -1 if true any value other than 0 sets to vis
+Visible				-	Input/Output (Bool) returns -1 if true any value other than 0 sets to vis
+Returns 			-	iHTMLDocument2	
+*/
+;; Returns an iHTMLDocument2 object
+iWebBrowser2(pTitle="",URL="",DocumentComplete=0,ByRef	WebBrowser2="",ByRef	left="",ByRef	top="",ByRef	height="",ByRef	width="",ByRef	MenuBar="",ByRef	AddressBar="",ByRef	StatusBar="",ByRef	Visible="")
+{
+	static ShellWindows 											;;	no need to create and destroy this if your automation is going to use the same one all the time
+	static iWebBrowser2												;;	no need to create and destroy this if your automation is going to use the same one all the time
+	static LocationName												;;	Store the page title of the current window
+	If	!ShellWindows	{											;; 	no need to re invent the wheal each time
+		oShell 			:= 	COM_CreateObject("Shell.Application")	;; 	there is no need to constantly create and destroy this object
+		ShellWindows 	:= 	COM_Invoke(oShell,	"Windows")			;;	leaving a copy of the windows collection avail for future calls just makes sence
+		If	!ShellWindows	{										;; 	failure generate an error and exit
+			MsgBox, 262160, Windows Collection, Creation of ShellWindows collection failed
+			WebBrowser2:=iWebBrowser2
+			Return
+		}
+		COM_Release(oShell)											;;	Now useless no need for it any more
+	}
+	/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	the conditions under which we need to create a new browser bariable are as follows
+	the static iWebBrowser2 is blank
+	the static LocationName variable has changed
+	*/ ;;//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	If	!iWebBrowser2	{											;;	create a new handle
+		
+		Gosub,Title
+		If	!LocationName	{
+			If	!iWebBrowser2	{									;;	No way to continue
+				MsgBox, 262160, Error, Without some reference to a valid Internet Explorer window the script cannot continue
+				WebBrowser2:=iWebBrowser2
+				Return
+			}														;;	while it doesnt make sense all w care about is the browser object
+			
+		}
+		Else	{
+			Gosub,GetBrowser
+		}
+	}
+	Else	If	(pTitle <> LocationName && pTitle) {				;;	assume this is a request for a new browser handle
+		Gosub,GetBrowser
+	}
+	
+	
+	If	!iWebBrowser2	{											;;	create a new handle
+										;;	No way to continue
+		MsgBox, 262160, Error, Without some reference to a valid Internet Explorer window the script cannot continue
+		WebBrowser2:=iWebBrowser2
+		Return
+	}
+	Else	{
+		WebBrowser2:=iWebBrowser2
+		If	URL	{
+			COM_Invoke(iWebBrowser2,"Navigate",URL)
+			Gosub,Ready
+		}
+		If	DocumentComplete	{									;;	there are times when outside of sending a URL you need to check the page is fully loaded
+			Gosub,Ready
+		}
+																	;; if you cant create a document it may be something is wrong with your browser object
+		If	!iHTMLDocument2	:=	COM_Invoke(iWebBrowser2,"document") {
+			MsgBox, 262160, Error, Could not get an iHTMLDocument2`nPlease pass a page title and retry
+			iWebBrowser2:=
+			Return
+		}		
+		
+		If	StrLen(top) {
+			COM_Invoke(iWebBrowser2,"top",top)
+		}
+		If	StrLen(left) {
+			COM_Invoke(iWebBrowser2,"left",left)
+		}
+		If	height {
+			COM_Invoke(iWebBrowser2,"height",height)
+		}
+		If	width {
+			COM_Invoke(iWebBrowser2,"width",width)
+		}
+		If	StrLen(MenuBar) {
+			COM_Invoke(iWebBrowser2,"MenuBar",MenuBar)
+		}
+		If	StrLen(AddressBar) {
+			COM_Invoke(iWebBrowser2,"AddressBar",AddressBar)
+		}
+		If	StrLen(StatusBar) {
+			COM_Invoke(iWebBrowser2,"StatusBar",StatusBar)
+		}
+		If	StrLen(Visible) {
+			COM_Invoke(iWebBrowser2,"Visible",Visible)
+		}
+		top:=COM_Invoke(iWebBrowser2,"top")
+		left:=COM_Invoke(iWebBrowser2,"left")
+		height:=COM_Invoke(iWebBrowser2,"height")
+		width:=COM_Invoke(iWebBrowser2,"width")
+		MenuBar:=COM_Invoke(iWebBrowser2,"MenuBar")
+		AddressBar:=COM_Invoke(iWebBrowser2,"AddressBar")
+		StatusBar:=COM_Invoke(iWebBrowser2,"StatusBar")
+		Visible:=COM_Invoke(iWebBrowser2,"Visible")
+	}
+	Return	iHTMLDocument2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; function ends	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+	Title:															;;	this internal sub will do the job of working out a title to search for
+	{
+		If	!pTitle	{
+			If	!iWebBrowser2	{ 									;;	to prevent ambiguity
+				IfWinNotExist,ahk_class IEFrame,,,					;;	No IE window exists
+				{
+					MsgBox, 262180, No Internet Explorer, No instance of  Internet Explorer has been found `nWould you like to Open your homepage?
+					IfMsgBox,yes
+					{
+						If	!iWebBrowser2 	:= (iWebBrowser2 := COM_CreateObject("InternetExplorer.Application") ) ? (iWebBrowser2,COM_Invoke(iWebBrowser2 , "Visible=", "True")) :
+						{
+							MsgBox, 262160, Error, Could not start Internet Explorer
+							Return									;;	return to the function	
+						}
+						Else	{
+							COM_Invoke(iWebBrowser2,	"GoHome")
+							Gosub,Ready
+							LocationName	:=	COM_Invoke(iWebBrowser2,	"LocationName")
+							Return									;;	return to the function		
+						}
+					}
+					Else	{
+						MsgBox, 262160, Error, No active Internet Explorer window was found
+						Return
+					}
+				}
+				Else	{
+					WinGetTitle,LocationName,ahk_class IEFrame
+					StringSplit,LocationName,LocationName,-			;;	ensure no crazy browser suffixes
+					LocationName=%LocationName1%
+					Return											;;	return to the function	
+				}
+			}
+			Else	{
+				LocationName	:=	COM_Invoke(iWebBrowser2,	"LocationName")
+				Return												;;	return to the function		
+			}
+		}
+		Else	{
+			StringSplit,LocationName,pTitle,-						;;	ensure no crazy browser suffixes
+			LocationName=%LocationName1%
+			Return													;;	return to the function
+		}
+	}
+	
+	
+	Ready:
+	{
+		loop 10							;	sets limit if itenerations to 40 seconds 80*500=40000=40 secs
+		{	
+			If not (rdy:=COM_Invoke(iWebBrowser2,"readyState") = 4)
+				Break					;	return success
+			Sleep,100					;	sleep .1 second between cycles
+		}
+		loop 80							;	sets limit if itenerations to 40 seconds 80*500=40000=40 secs
+		{	
+			If (rdy:=COM_Invoke(iWebBrowser2,"readyState") = 4)
+				Return					;	Done
+			Sleep,500					;	sleep half second between cycles
+		}
+		MsgBox, 262160, Error, While waiting for IE to return to a DocumentComplete the script exceeded the wait time
+		Return
+	}
+	
+	
+	GetBrowser:
+	{
+	If	LocationName	{										;; conditions for when to create a new browser handle
+			Loop, %	COM_Invoke(ShellWindows,	"Count")			;;	loop thru all the windows and find a match
+			{
+				Name	:=	COM_Invoke(ShellWindows,"Item[" A_Index-1 "].LocationName")
+				IfInString,Name,%LocationName%
+				{
+					iWebBrowser2	:=	COM_Invoke(ShellWindows,"Item",A_Index-1)
+					LocationName	:=	COM_Invoke(iWebBrowser2,"LocationName")
+					Return
+				}
+			}
+		}
+		Else	{
+			MsgBox, 262160, Error, Without some reference to a valid Internet Explorer window the script cannot continue
+			Return
+		}
+		If	!iWebBrowser2	{
+			MsgBox, 262160, Error, No instance of Internet Explorer matches the page title %LocationName% `nThe script cannot continue
+			Return
+		}
+		
+	}	
+}I am hoping this simplifies for many accessing an Internet Explorer window
+works well on versions 6-8 probably 5.x as well but cant test that
+
+Sending a blank title will use the topmost avail IE browser in the absence of an open instance of IE will prompt the user to create one
+
+Please remember to uninitialise COM when you are done
+
+Why did I write this
+My current library of functions still seems to confuse many
+
+This new function handles
+waiting for a page load
+navigating to a web site
+manipulating the visibility position and size of the intended browser
+
+gives a wide range of example of the ability to use MSDN references to manipulate the browser
+
+Use like this
+iWebBrowser2("auto","http://google.com") ; auto for title of an autohotkey page sorry that was confusing to me too a month later
+Injecting Javascript done like so
+COM_CoInitialize()
+iHTMLDocument2:=iWebBrowser2("IE7","","",iWebBrowser2)
+js=
+(
+alert("Hi this was javascript");
+var xx="I just retreived a javascript variable";
+)
+COM_Invoke(iHTMLDocument2,	"parentwindow.execscript",js)
+MsgBox	% COM_Invoke(iHTMLDocument2,	"parentwindow.xx")
+COM_Release(iHTMLDocument2)	
+COM_Release(iWebBrowser2)	
+COM_CoUnInitialize()
+ExitApp
+now for those of us freaks who like to manipilate the dom
+let me first start with a couple links
+executeScript is just one of many things that can be done from the document or window object basically if the msdn has it for these objects you can use com to do it also thanks again Sean
+in other examples in this forum this was accessed thru the
+IID_IHTMLWindow2 interface as in this example
+
+IE_InjectJS by ahklerner
+IE_InjectJSbyTT by SinClair to use with tabs
+
+both work tho
+SinClair's requires the tab to be selected tho so it just ddidnt satisfy my need for moving to IE7 as i need to force the window to be minimized to keep users from interacting with complicated routines
+
+Lexikos pointed out that both have alot of overhead lots of looping
+
+Mine will have some looping too and it is still a flaw till i get a way to get it nailed down better
+
+However, Mine does not use acc library nor does it use the conventional IHTMLWindow2 interfaces. in addition its quite a bit shorter thAn either
+As well they my function works on minimised non selected tabs. and should work on both ie6 as well as ie7 i tested this script on IE7 on Vista ultimate FYI edit now also tested on xp wiht ie6
+
+edit: with ahklerner shortened version below thanks man
+eddit removed the release acc command as its not needed any more
+Never lose.
+WIN or LEARN.
+
+ahklerner
+Members
+1386 posts
+ Last active: Oct 08 2014 10:29 AM
+Joined: 26 Jun 2006
+Here is a slightly shorter version. Hope you dont mind.
+IE7_Nav(title="A",url="http://autohotkey.com") {
+	COM_Init()
+	Loop, %   COM_Invoke(psw := COM_Invoke(psh := COM_CreateObject("Shell.Application"), "Windows"), "Count")
+		{
+		If ( InStr(tabname:=COM_Invoke(pwb := COM_Invoke(psw, "Item", A_Index-1), "LocationName"),title,0) ) {
+			COM_Invoke(pwb, "Navigate",url) ;xecute the navigation
+			doc:= COM_Invoke(pwb, "Document")
+			loop {
+				If (rdy:=COM_Invoke(doc,"readyState") = "complete") ;Better to use the document readystate more consistent page load results
+					break
+				Sleep, 500
+				}
+			COM_Release(doc) 
+			}
+		COM_Release(tabname), COM_Release(pwb)
+		}
+	COM_Release(psw), COM_Release(psh), COM_Term()
+	}
+IE7_InjectJS(Access_Tab_Title, JS_to_Inject, VarNames_to_Return="") {
+	COM_Init()
+	Loop, %   COM_Invoke(psw := COM_Invoke(psh := COM_CreateObject("Shell.Application"), "Windows"), "Count")
+		{
+		If (InStr(title:=COM_Invoke(pwb := COM_Invoke(psw, "Item", A_Index-1), "LocationName"), title, 0)) && (JS_to_Inject || VarNames_to_Return) {
+			window:= COM_Invoke(doc:= COM_Invoke(pwb, "Document"), "parentWindow")
+			If JS_to_Inject
+			COM_Invoke(window, "execScript",JS_to_Inject) 
+			If VarNames_to_Return {
+				StringSplit, Vars_, VarNames_to_Return, `,
+				Loop, %Vars_0%
+					Ret .= COM_Invoke(window,Vars_%A_Index%) . ","
+				StringTrimRight, Ret, Ret, 1
+				}
+			COM_Release(window), COM_Release(doc) ; , ACC_Term()
+			break
+			}         
+		COM_Release(title), COM_Release(pwb)
+		}
+	COM_Release(psw), COM_Release(psh), COM_Term()
+	Return Ret
+	}
+Posted Image
+ʞɔпɟ əɥʇ ʇɐɥʍ
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+Dude i will never mind your input
+and shorter is always better
+I really hope you dont mind me using you in my examples so much but your function was the foundation for my end goal
+:D
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+I have been asked several times professionally and privately in this community for scripting acrross frames
+
+<!-- m -->http://msdn.microsof.../ms533028(VS.85<!-- m -->).aspx
+About Cross-Frame Scripting and Security
+
+
+outlines the difficulty with this
+
+Now given this very important restriction
+
+only pages with identical domain properties are allowed free interaction. The protocol of the URL must also match. For instance, an HTTP page cannot access HTTPS content.
+
+
+that said thie following function has been added to the IE7 functions
+
+IE7_SetFrame_Form_DOM(parentWindow,FRM,FOM,ID1,val=0)
+{
+   if FRM is integer
+      ahkframe:="document.frames(" . FRM . ")"
+   Else
+      ahkframe:="document.frames('" . FRM . "')"
+   if FOM is integer
+      ahkform:=ahkframe . ".document.forms(" . FOM . ")"
+   Else
+      ahkform:=ahkframe . ".document.forms('" . FOM . "')"
+   if ID1 is integer
+      ahkele:=ahkform . ".elements(" . ID1 . ")"
+   Else
+      ahkele:=ahkform . ".elements('" . ID1 . "')"
+	  
+   tagName:=IE7_ExecuteJS(parentWindow, "var tagName=" . ahkele . ".tagName;" , "tagName")
+   teststring:="inputselecttextarea"
+   IfInString,teststring,%tagName%
+      domString := ahkele . ".value"
+   Else
+      domString := ahkele . ".innerHTML"
+   if val
+		Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . "='" . val . "';","oDom")
+	Else
+		Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . ";","oDom")
+   Return
+}and this one below ignores frame and uses the all collection
+IE7_SetFrame_DOM(parentWindow,FRM,ID1,val=0) 
+{
+   if FRM is integer
+      ahkframe:="document.frames(" . FRM . ")"
+   Else
+      ahkframe:="document.frames('" . FRM . "')"
+   if ID1 is integer
+      ahkele:=ahkframe . ".document.all(" . ID1 . ")"
+   Else
+      ahkele:=ahkframe . ".document.all('" . ID1 . "')"
+	  
+   tagName:=IE7_ExecuteJS(parentWindow, "var tagName=" . ahkele . ".tagName;" , "tagName")
+   teststring:="inputselecttextarea"
+   IfInString,teststring,%tagName%
+      domString := ahkele . ".value"
+   Else
+      domString := ahkele . ".innerHTML"
+   if val
+		Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . "='" . val . "';","oDom")
+	Else
+		Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . ";","oDom")
+   Return
+}
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+To prevent confusion from different version of the script library
+this doesnt depend on com invoke deep any more
+Now avail for download 9/8/2009
+iWeb functions
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+DOM Browser9/8/2009
+Posted Image
+
+
+
+
+
+
+
+
+
+
+this is a script i wrote based on the above demostrates some limited use but helps get you some valuable information for implementing an automation project
+Again i hope someone finds this usefull
+clickinfo=
+(
+function whichElement()
+{
+tname=event.srcElement.tagName;
+tindex=event.srcElement.sourceIndex;
+tid=event.srcElement.id;
+name=event.srcElement.name;
+val="";
+switch(tname.toLowerCase())
+{
+case "input":
+	val=event.srcElement.value;
+	typ=event.srcElement.type
+	if (typ.toLowerCase()=="button"){
+	event.srcElement.disabled='true';
+	}
+	if (typ.toLowerCase()=="submit"){
+	event.srcElement.disabled='true';
+	}
+	if (typ.toLowerCase()=="image"){
+	event.srcElement.disabled='true';
+	}
+	if (typ.toLowerCase()=="reset"){
+	event.srcElement.disabled='true';
+	}
+innerhtml=val;
+  break;    
+case "a":
+	event.srcElement.onclick="";
+	link = "\nLink = "+event.srcElement.href
+innerhtml=event.srcElement.innerHTML+link;
+	event.srcElement.href="javascript:Void(0)";
+  break;
+case "select":
+	val=event.srcElement.value;
+innerhtml=val;
+  break;
+default:
+innerhtml=event.srcElement.innerHTML
+}
+}
+    document.body.onmousedown = whichElement 
+)
+instructions=
+(
+1`) Enter a title 
+2`) Click Get Window 
+3`) Click the location on the browser window you need info on 
+4`) Click Get Dom
+)
+Gui, Add, Text, x6 y10 w130 h20 , Enter the Page Title
+Gui, Add, Edit, x6 y30 w210 h20 vWintitle,
+Gui, Add, Text, x6 y50 w310 h60 , % instructions
+Gui, Add, Button, x216 y30 w90 h20 gGetwin, Get Window
+Gui, Add, Button, x6 y110 w90 h20 gGetDom, Get Dom
+Gui, Add, Edit, x6 y130 w310 h90 vDom,
+
+Gui, Show, h225 w320, DOM Extractor
+Return
+
+GuiClose:
+ExitApp
+
+Getwin:
+Gui,Submit,NoHide
+COM_Init()
+parentWindow:=IE7_Get(Wintitle)
+IE7_ExecuteJS(parentWindow, clickinfo)
+
+return
+GetDom:
+tname:=IE7_ExecuteJS(parentWindow, "","tname")
+tindex:=IE7_ExecuteJS(parentWindow, "","tindex")
+tid:=IE7_ExecuteJS(parentWindow, "","tid")
+name:=IE7_ExecuteJS(parentWindow, "","name")
+innerhtml:=IE7_ExecuteJS(parentWindow, "","innerhtml")
+GuiControl,Text,Dom,% "Dom accessable objects for document`.all collection `nElement type (" . tname . ")`nIndex (" . tindex . ")`nID attribute if any (" . tid . ")`nName attribute if any (" . name . ")`nhtml value = " . innerhtml
+returnIf any one wants to suggest enhancements to this particular script or one of the previous scripts please let me know
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+this is just the javascript that you would use with execute js on a given window
+this script will output all forms and relavent dom elements and information to a new html window
+it will then list all of the links as well
+from an automation standpoint this is nearly every peice of information from an entering data aspect you could ever need
+what it doesnt get is form elements not included in a <form></form> tag
+list_elements= 
+( 
+var x=document.forms; 
+win=window.open("blank.htm","forms1"); 
+
+for (var f=0;f<=x.length-1;f++)  { 
+ win.document.writeln("<table border=1 cellspacing=0>"); 
+win.document.writeln("<tr><td>form"); 
+  win.document.writeln("</td><td>name"); 
+  win.document.writeln("</td><td>id"); 
+  win.document.writeln("</td><td>action"); 
+win.document.writeln("</td><td>OnSubmit"); 
+ win.document.writeln("<tr><td>"); 
+  win.document.writeln("<tr><td>" + f); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(x[f].name); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(x[f].id); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(x[f].action); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(x[f].OnSubmit); 
+  win.document.writeln("</td></tr>"); 
+
+ win.document.writeln("</table>"); 
+
+ win.document.writeln("<table border=1 cellspacing=0>"); 
+win.document.writeln("<tr><td>Element"); 
+  win.document.writeln("</td><td>name"); 
+  win.document.writeln("</td><td>id"); 
+  win.document.writeln("</td><td>value"); 
+win.document.writeln("</td><td>type"); 
+win.document.writeln("</td><td>onclick"); 
+win.document.writeln("</td><td>onchange"); 
+win.document.writeln("</td><td>innerHTML"); 
+  win.document.writeln("</td></tr>"); 
+var l=x[f].elements 
+for (var i=0;i<=l.length-1;i++)  
+{ 
+win.document.writeln("<tr><td>" + i); 
+win.document.writeln("</td><td>"+l[i].name); 
+win.document.writeln("</td><td>"+l[i].id); 
+win.document.writeln("</td><td>"+l[i].value); 
+win.document.writeln("</td><td>"+l[i].type); 
+win.document.writeln("</td><td>"+l[i].onClick); 
+win.document.writeln("</td><td>"+l[i].onChange); 
+win.document.writeln("</td><td>"+l[i].innerHTML); 
+win.document.writeln("</td></tr>"); 
+ } 
+
+ win.document.writeln("</table>"); 
+  } 
+
+
+ win.document.writeln("</table>"); 
+ win.document.writeln("<table border=1 cellspacing=0>"); 
+win.document.writeln("<tr><td>All links index"); 
+  win.document.writeln("</td><td>href"); 
+  win.document.writeln("</td><td>target"); 
+  win.document.writeln("</td><td>innerHTML"); 
+  win.document.writeln("</td><td>name"); 
+  win.document.writeln("</td><td>id"); 
+  win.document.writeln("</td><td>class"); 
+  win.document.writeln("</td><td>onclick"); 
+  win.document.writeln("</td></tr>"); 
+var y=document.links; 
+for (var m=0;m<=y.length-1;m++)  { 
+  win.document.writeln("<tr><td>" + m); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].href); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].target); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].innerHTML); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].name); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].id); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].className); 
+  win.document.writeln("</td><td> "); 
+  win.document.writeln(y[m].onclick); 
+  win.document.writeln("</td></tr>"); 
+} 
+ win.document.writeln("</table>"); 
+) 
+Never lose.
+WIN or LEARN.
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+tank already knew this, however, I'm posting it anyway for who is not aware of it.
+
+IE7 supports multi-tab windows, but the conventional WebBrowser control is lacking of a function to differentiate one among them, the HWND function in IWebBrowser2 object always returns the window handle of IEFrame, not the new window class TabWindowClass.
+
+Here is a method to obtain the window handle of TabWindowClass from the IWebBrowser2 object pwb (:if applied to IE6 etc, I think it'll just return the window handle of IEFrame).
+
+IETabWindow(pwb)
+{
+	psb  :=	COM_QueryService(pwb,IID_IShellBrowser:="{000214E2-0000-0000-C000-000000000046}")
+	DllCall(NumGet(NumGet(1*psb)+12), "Uint", psb, "UintP", hwndTab)
+	DllCall(NumGet(NumGet(1*psb)+ 8), "Uint", psb)
+	Return	hwndTab
+}
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+@ Sean thanks
+I considered this but i was trying to be generic thru versions of IE supporting tabbed and non tabbed browsing with the same scripti did notice just now that i took out the comments for the new window vs new tab vs new unfocused tab
+
+But then i spose i shoulodnt have labeled them as IE7 functions instead just calling them IE_ either way its good to know that it works fine without the hwndTab though the hwndTab does give you some other options for action not included in the DOM usage demonstrated
+
+At any rate Sean thank you for posting what i think will be a much needed missing link in the event someone needs it the goal of the whole post here was to help feild the many questions about how to automate web forms and scrape data from browser screens. hopefully the number of views on this post without questions means i might have accomplished this.
+
+Here is a method to obtain the window handle of TabWindowClass from the IWebBrowser2 object pwb (:if applied to IE6 etc, I think it'll just return the window handle of IEFrame).
+
+
+IShellBrowser
+<!-- m -->http://msdn.microsof.../bb775123(VS.85<!-- m -->).aspx
+IWebBrowser2::HWND Property
+<!-- m -->http://msdn.microsof.../aa752126(VS.85<!-- m -->).aspx
+
+I actually "thought" the contrary Now that you mention it it makes some sense i'll have to test :D tho
+The IWebBrowser2::HWND Property does seem to confirm your statement
+
+
+the HWND function in IWebBrowser2 object always returns the window handle of IEFrame, not the new window class TabWindowClass.
+
+
+Yes this of course is perfectly accurate but for My particular needs it was all that was necesary.... In hindsite to make a truly usefull IE automation Wrapper Function Library or WFL :shock: (too far or is a new acronym ok here) it would Probably better to expose the TabWindowClass.
+Lets not forget this is all just an implementation of YOUR genious any how :D
+
+
+also if not entirely obvious to those reading this going from the hTab to the document object
+(unless Sean has a better way)
+         COM_AtlAxAttachControl(pwb, hTab)
+         doc:=COM_Invoke(pwb, "Document")
+         parentWindow:=COM_Invoke(doc, "parentWindow")
+         COM_Invoke(parentWindow, "execScript","alert('js executed')")
+         COM_Release(doc),COM_Release(parentWindow), COM_Release(pwb)
+Never lose.
+WIN or LEARN.
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+COM_AtlAxAttachControl(pwb, hTab)
+         doc:=COM_Invoke(pwb, "Document")
+         parentWindow:=COM_Invoke(doc, "parentWindow")
+         COM_Invoke(parentWindow, "execScript","alert('js executed')")
+         COM_Release(doc),COM_Release(parentWindow), COM_Release(pwb)
+I'm surprised. It looks very interesting. In what process was pwb created? You seem to attach a COM object created in one process to a window created by another process... Am I right? Did ATL handle it well?
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+[quote name="Sean"] [quote="tank"]
+COM_AtlAxAttachControl(pwb, hTab)
+         doc:=COM_Invoke(pwb, "Document")
+         parentWindow:=COM_Invoke(doc, "parentWindow")
+         COM_Invoke(parentWindow, "execScript","alert('js executed')")
+         COM_Release(doc),COM_Release(parentWindow), COM_Release(pwb)[/quote]
+I'm surprised. It looks very interesting. In what process was pwb created? You seem to attach a COM object created in one process to a window created by another process... Am I right? Did ATL handle it well?[/quote]
+As a matter of fact it did handle it well
+I tested this both with this method used in browser control here
+<!-- m -->http://www.autohotke... ... er_Control<!-- m -->
+CLSID_WebBrowser := "{8856F961-340A-11D0-A96B-00C04FD705A2}"
+IID_IWebBrowser2 := "{D30C1661-CDAF-11D0-8A3E-00C04FC9E26E}"
+pwb := CreateObject(CLSID_WebBrowser, IID_IWebBrowser2)and the method i use in my functions (ok you got me i got the idea from you) 8)
+
+pwb:=COM_Invoke(COM_Invoke(COM_CreateObject("Shell.Application"), "Windows"), "Item", 0) ; any zero based index of browser windowsBefore going any farther i want to make sure every one reading this understands something very well
+the windows collections includes windows explorer and internet explorer so if you cant return a documant object its likely because you have a folder view open :(
+this is why my functions loop to match Frame Titles
+so assuming the last code above returns a iwebrowser interface they both work with the
+COM_AtlAxAttachControl puts the handle and the pwb together well. tho my second method really has no reason to approach the hwnd at all unless you need access to it for other uses ...... Ill not dare those here because lack oif experience using it
+
+as sean pointed out my method takes you straight to the of IEFrame and then to the Document object. For purposes of automating Long jobs in an IE window the DOM is all you need
+actually im making a minor statement change the pwb is a IWebBrowser2 Interface and Exposes methods that are implemented by the WebBrowser control (Microsoft ActiveX control) or implemented by an instance of the InternetExplorer application (OLE Automation). For the Microsoft .NET Framework version of this control, see WebBrowser Control (Windows Forms).
+
+Seans function obtains the window handle of TabWindowClass from the IWebBrowser2 object :D
+
+[quote name="Sean"]
+IE7 supports multi-tab windows, but the conventional WebBrowser control is lacking of a function to differentiate one among them, the HWND function in IWebBrowser2 object always returns the window handle of IEFrame, not the new window class TabWindowClass
+
+[/quote]
+I bring it up to beclear pwb is an interface pointer that exposes methods and porerties avaiable to 2 different (albiet Similar) objects
+<!-- m -->http://msdn.microsof...y/aa752127.aspx<!-- m -->
+the pwb will refer to the browser object in a particular tab in IE7not internet explorer as a whole
+
+No matter which way i go about creating the pwb this approach works fine
+I use both apraoches often in my personal and professional endeavors[/quote][/code]
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+COM_CoInitialize()
+
+COM_Release(iWebBrowser2("","http://www.autohotkey.com/","",myPageHandle))
+
+iWeb_clickText(myPageHandle,"forum") ; cycles thru the links collection and clicksthe first text match it finds then waits for the page load to complete
+
+iWeb_complete(myPageHandle)
+
+iWeb_clickText(myPageHandle,"search")
+
+iWeb_complete(myPageHandle)
+
+iWeb_setDomObj(myPageHandle,"search_keywords","PLEASE HELP!! why is my thingy not working as expected?") ;example of filling out a form
+
+iWeb_clickValue(myPageHandle,"search")
+
+iWeb_complete(myPageHandle)
+
+iWeb_clickText(myPageHandle,"PLEASE HELP")
+
+iWeb_complete(myPageHandle)
+
+MsgBox, 262192, Meet the Robinsons, Please Read the first Post before asking me any questions, 5
+
+iWeb_clickText(myPageHandle,"search")
+
+iWeb_complete(myPageHandle)
+
+iWeb_setDomObj(myPageHandle,"search_keywords","Automation IE7 Navigation and Scripting with Tabs") ;example of filling out a form
+
+iWeb_clickValue(myPageHandle,"search") ; click a button labeled search and wait for the page to load
+
+iWeb_complete(myPageHandle)
+
+iWeb_clickText(myPageHandle,"Automation IE7 Navigation and Scripting with Tabs")
+
+iWeb_complete(myPageHandle)
+
+MsgBox, 262192,, Automation IE7 Navigation and Scripting with Tabs, 5
+
+COM_CoUnInitialize()
+
+ExitAppthe above gives an example of opening a page and clicking links and filling out web forms then clicking buttons
+Never lose.
+WIN or LEARN.
+
+imapow
+Members
+155 posts
+ Last active: Oct 13 2009 08:35 AM
+Joined: 13 Mar 2008
+you shold add another pool answer "i use firefox but its a good idea"
+-._.-¨¯¨-._.-IM@PΩW-._.-¨¯¨-._.-
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+you sold add another pool answer "i use firefox but its a good idea"
+
+huh
+Never lose.
+WIN or LEARN.
+
+imapow
+Members
+155 posts
+ Last active: Oct 13 2009 08:35 AM
+Joined: 13 Mar 2008
+huh
+
+?
+-._.-¨¯¨-._.-IM@PΩW-._.-¨¯¨-._.-
+Page 1 of 15 1 2 3next »Back to Scripts and Functions
+Community Forum Software by IP.Board
+Licensed to: AutoHotkey Foundation LLCRSS Feed Change Theme English (USA) Privacy Policy Help

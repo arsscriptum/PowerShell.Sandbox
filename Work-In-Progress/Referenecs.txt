@@ -1,0 +1,30 @@
+
+
+
+To Read on how to create a module!
+
+https://powershell.one/wmi/cdxml-create-part3
+Release Notes
+https://github.com/markekraus/PSMSGraph/blob/master/RELEASE.md
+
+ChangeLog
+https://github.com/markekraus/PSMSGraph/blob/master/docs/ChangeLog.md
+
+
+------------------------------------------------------------
+
+https://psmsgraph.readthedocs.io/en/latest/functions/Export-GraphApplication/
+
+https://psmsgraph.readthedocs.io/en/latest/#quickstart 
+
+
+----------------------------------------------------------------
+Microsoft Graph API
+
+https://www.powershellgallery.com/packages/psmsgraph/1.0.27.60
+
+
+
+https://www.powershellgallery.com/packages/psmsgraph/1.0.27.60
+psmsgraph 1.0.27.60
+Provides Connectivity and access to Microsoft Graph API

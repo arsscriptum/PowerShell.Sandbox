@@ -1,0 +1,727 @@
+==========================================================================================================
+#delete directory problem
+              
+> dir /x
+03/05/2020  18:17    <DIR>          LOOK%2~1     Look%20at%20the%20guy,%20people%20love%20him.
+
+>rd /q /s LOOK%2~1
+==========================================================================================================
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/rapid7/metasploitable3/master/Vagrantfile" -OutFile "Vagrantfile"
+==========================================================================================================
+  cd %USERPROFILE% #when debugging a command
+  echo cd %USERPROFILE% #when debugging a command
+========================================================================================================== 
+        set USERPROFILE #query the value of %USERPROFILE%
+        set #see all currently defined environment variables 
+        mkdir %USERPROFILE%\.kube
+==========================================================================================================
+#show history
+function key(fn) on keyboard + F7 #1st option
+doskey/history #2nd option
+==========================================================================================================
+#Active Directory
+To quickly list all the groups in your domain, with members
+dsquery group -limit 0 | dsget group -members –expand
+
+To find all users whose accounts are set to have a non-expiring password
+dsquery * domainroot -filter “(&(objectcategory=person)(objectclass=user)(lockoutTime=*))” -limit 0
+
+To list all the FSMO role holders in your forest
+netdom query fsmo
+
+To refresh group policy settings
+gpupdate
+
+To list all applied GPO on client machine
+gpresult /H c:/tmp/policy.html
+
+To check Active Directory replication on a domain controller
+repadmin /replsummary
+
+To force replication from a domain controller without having to go through to Active Directory Sites and Services
+repadmin /syncall
+
+To see what server authenticated you (or if you logged on with cached credentials) you can run either of these commands:
+set l
+echo %logonserver%
+
+To see what security groups you belong to
+whoami
+
+To see what security groups you belong to
+whoami /groups
+
+To see the domain account policy (password requirements, lockout thresholds, etc)
+net accounts
+
+#Networking
+To quickly generate a text summary of your system
+systeminfo | more
+
+To add an entry to your routing table that will be permanent, run the route add command with the –p option
+route add 0.0.0.0 mask 0.0.0.0 172.16.250.5 –p
+
+To quickly reset your NIC back to DHCP with no manual settings,
+netsh int ip reset all
+Need to run a trace
+netsh trace start capture=yes tracefile=c:\capture.etl
+netsh trace stop
+
+
+To see all network connections your client has open
+net use
+To see your routing table, run either of these commands
+route print
+netstat -r
+netstat –ano 1
+netstat –ano 8
+netstat –ano 40
+add a | findstr value to watch for only a specific connection, like a client ip.addr or port
+netstat –ano | findstr 216.134.217.20
+netstat –ano 1| findstr 216.134.217.20
+netstat –ano 50| findstr 216.134.217.20
+netstat -ano 1 | findstr :139
+netstat -ano 50 | findstr :139
+List out all connections
+netstat -a
+List only TCP connections
+netstat -at
+List only UDP connections
+netstat -au
+Disable reverse dns lookup for faster output
+netstat -ant
+List out only listening connections
+netstat -tnl
+Get process name/pid and user id
+netstat -nlpt
+netstat -ltpe
+Print statistics
+netstat -s
+Display kernel routing information
+netstat -rn
+Print network interfaces
+netstat -i
+Get netstat output continuously
+netstat -ct
+
+ipconfig /all                             IP Configuration (Display Connection Configuration)
+ipconfig /displaydns                 IP Configuration (Display DNS Cache Contents)
+ipconfig /flushdns                     IP Configuration (Delete DNS Cache Contents)
+ipconfig /release                     IP Configuration (Release All Connections)
+ipconfig /renew                         IP Configuration (Renew All Connections)
+ipconfig /registerdns             IP Configuration (Refreshes DHCP & Re-Registers DNS)
+ipconfig /showclassid             IP Configuration (Display DHCP Class ID)
+ipconfig /setclassid                 IP Configuration (Modifies DHCP Class ID)
+
+ netsh interface ip set
+ netsh interface ip set address -> configure the address type (DHCP or manually configured), the IPv4 address, subnet mask, and default gateway.
+ netsh interface ip set dns -> configure the source of DNS server addresses (DHCP or manually configured), a DNS server address, and DNS registration behavior. 
+ netsh interface ip set wins -> configure the source of WINS server addresses (DHCP or manually configured) and a WINS server address.
+ netsh interface ip show config
+ netsh –r filesrv1 interface ip show config -> display the configuration of the remote computer named FILESRV1
+
+arp –a -> display the current contents of the ARP cache
+arp –d * -> flush the ARP cache
+==========================================================================================================
+Windows provides the following tools for troubleshooting TCP/IP problems: 
+Arp
+Hostname
+Ipconfig
+Nbtstat
+Netsh
+Netstat
+Nslookup
+Ping
+Route
+Tracert
+Pathping
+SNMP service
+Event Viewer
+Performance Logs and Alerts
+Network Monitor
+Netdiag.
+
+
+obtain the IPv4 address of your default gateway
+ipconfig
+netsh interface ip show config
+route print 
+==========================================================================================================
+Repair the Connection
+Click Start, click Control Panel, and then double-click Network Connections. Right-click the connection that you want to repair, and then click Repair.
+The tasks that are performed by Network Connection Repair are the following:
+Checks whether DHCP is enabled and, if enabled, sends a broadcast DHCPRequest message to refresh the IPv4 address configuration.
+Flushes the ARP cache. This is equivalent to the arp -d * command.
+Flushes and reloads the DNS client resolver cache with entries from the Hosts file. This is equivalent to the ipconfig /flushdns command.
+Re-registers DNS names using DNS dynamic update. This is equivalent to the ipconfig /registerdns command.
+Flushes and reloads the NetBIOS name cache with #PRE entries in the Lmhosts file. This is equivalent to the nbtstat -R command.
+Releases and then re-registers NetBIOS names with the Windows Internet Name Service (WINS). This is equivalent to the nbtstat -RR command.
+
+Verify Configuration
+ipconfig /all
+The display of the ipconfig /all command includes IPv4 addresses, default gateways, and DNS settings for all interfaces. The Ipconfig tool only works on the local computer.
+netsh interface ip show config
+The display of the netsh interface ip show config command includes DNS and WINS servers per interface. 
+netsh –r filesrv1 interface ip show config
+display the configuration of the remote computer named FILESRV1
+
+Manage Configuration
+netsh interface ip set address
+configure the address type (DHCP or manually configured), the IPv4 address, subnet mask, and default gateway
+netsh interface ip set dns
+configure the source of DNS server addresses (DHCP or manually configured), a DNS server address, and DNS registration behavior
+netsh interface ip set wins
+configure the source of WINS server addresses (DHCP or manually configured) and a WINS server address
+Ipconfig commands to manage DHCP addresses
+ipconfig /release
+ipconfig /renew
+ipconfig /showclassid
+ipconfig /setclassid
+
+Verify Reachability
+arp –a 
+display the current contents of the ARP cache
+arp –d * 
+flush the ARP cache.This command also removes static ARP cache entries
+Ping the default gateway
+obtain the IPv4 address of your default gateway
+ipconfig
+netsh interface ip show config
+route print
+Ping a remote destination by its IPv4 address
+This step might not succeed if the destination is filtering all ICMP messages
+Trace the route to the remote destination
+tracert –d
+–d command line option prevents the Tracert tool from performing a DNS reverse query on every near-side router interface in the routing path
+This step might not succeed if the intermediate routers or the destination are filtering all ICMP messages
+
+Check Packet Filtering
+On the source node, check for the following:
+Active IPsec policies with the IP Security Monitor snap-in
+
+
+View and Manage the Local IPv4 Routing Table
+view the IPv4 routing table
+netstat –r
+route print
+add a route to the IPv4 routing table
+route add
+modify an existing route
+route change
+remove an existing route
+route delete
+
+Verify Router Reliability
+suspect a problem with router performance
+trace the route a packet takes to a destination and display information on packet losses for each router and link in the path
+pathping –d IPv4Address 
+
+Verifying DNS Name Resolution for IPv4 Addresses
+Verify DNS configuration
+Display and flush the DNS client resolver cache
+Test DNS name resolution with the Ping tool
+Use the Nslookup tool to view DNS server responses
+
+Verify DNS Configuration
+ipconfig /all
+obtain information about which DNS names should be registered in DNS
+netsh interface ip show dns
+register the appropriate DNS names as IPv4 address resource records (also known as A resource records) with DNS dynamic update
+ipconfig /registerdns
+
+Display and Flush the DNS Client Resolver Cache
+display the contents of the DNS client resolver cache
+ipconfig /displaydns
+flush the contents of the DNS client resolver cache and reload it with the entries in the Hosts file
+/flushdns
+
+Test DNS Name Resolution with Ping
+If the Ping tool is using the wrong IPv4 address, flush the DNS client resolver cache with the ipconfig /flushdns command and use the Nslookup tool to determine the set of addresses returned in the DNS Name Query Response message
+Nslookup > prompt, use the set d2
+display the maximum amount of information about the DNS response messages.
+look up the desired FQDN and display the details of the DNS response message.
+Look for A records in the detailed display of the DNS response messages
+
+Verifying NetBIOS Name Resolution
+Verify NetBT configuration
+Display and reload the NetBIOS name cache
+Test NetBIOS name resolution with Nbtstat
+
+
+Verify NetBIOS over TCP/IP configuration
+obtain this information
+NetBIOS computer name
+NetBIOS node type
+Primary WINS server
+Secondary WINS server
+Whether NetBIOS over TCP/IP is disabled
+ipconfig /all
+obtain information about the NetBIOS scope ID assigned to each interface
+nbtstat -c 
+verify whether Lmhosts lookup is enabled
+check the WINS tab for the advanced properties of the Internet Protocol (TCP/IP) component
+display the local NetBIOS name table
+nbtstat –n
+display the NetBIOS name table of a remote computer
+nbtstat –a ComputerName
+nbtstat –A IPv4Address
+release and re-register the NetBIOS names of the node in WINS
+nbtstat -RR
+
+
+Display and Reload the NetBIOS Name Cach
+display the contents of the NetBIOS name cache
+nbtstat -c
+flush the contents of the NetBIOS name cache and reload it with the #PRE entries in the Lmhosts file
+nbtstat -R
+
+
+
+Test NetBIOS Name Resolution with Nbtstat
+test NetBIOS name resolution
+nbtstat –a ComputerName 
+
+Verifying IPv4-based TCP Sessions
+Check for packet filtering
+Verify TCP session establishment
+Verify NetBIOS sessions
+
+Verify TCP Session Establishment
+To verify that a TCP connection can be established using the known destination TCP port number
+telnet IPv4Address TCPPort
+verify whether the Web server service on the computer with the IPv4 address of 131.107.78.12 is accepting TCP connections
+telnet 131.107.78.12 80
+
+Verify NetBIOS Sessions
+verify that you have established NetBIOS sessions
+nbtstat –s
+==========================================================================================================
+Troubleshooting IPv6
+Troubleshooting IPv6
+The following sections describe the tools and techniques used to identify a problem at successive layers of the TCP/IP protocol stack using an IPv6 Internet layer. Depending on the type of problem, you might do one of the following:
+Start at the bottom of the stack and move up.
+Start at the top of the stack and move down.
+
+The following sections are organized from the top of the stack
+Verify IPv6 connectivity.
+Verify DNS name resolution for IPv6 addresses.
+Verify IPv6-based TCP sessions.
+
+Verifying IPv6 Connectivity
+the tasks to troubleshoot problems with IPv6 connectivity:
+Verify configuration
+Manage configuration
+Verify reachability
+View and manage the IPv6 routing table
+Verify router reliability
+
+
+Verify Configuration
+ipconfig /all
+includes IPv6 addresses, default routers, and DNS settings for all interfaces
+netsh interface ipv6 show address
+displays the IPv6 addresses assigned to each interface
+netsh –r filesrv1 interface ipv6 show address
+display the configuration of the remote computer named FILESRV1
+
+Manage Configuration
+netsh interface ipv6 set address 
+manually configure IPv6 addresses
+
+netsh interface ipv6 set interface
+make changes to the configuration of IPv6 interfaces
+netsh interface ipv6 add dns
+add the IPv6 addresses of DNS servers
+option of the Netsh tool to manage the IPv6 configuration of a remote computer
+ –r RemoteComputerName 
+ 
+
+Verify Reachability
+Check and flush the neighbor cache
+netsh interface ipv6 show neighbors
+display the current contents of the neighbor cache
+netsh interface ipv6 delete neighbors
+flush the neighbor cache
+Check and flush the destination cache
+netsh interface ipv6 show destinationcache
+display the current contents of the destination cache
+netsh interface ipv6 delete destinationcache
+flush the destination cache
+Ping the default router
+obtain the link-local IPv6 address of your default router
+ipconfig
+netsh interface ipv6 show routes
+route print
+nbtstat -r
+When you ping the default router, you must specify the zone identifier (ID) for the interface on which you want the ICMPv6 Echo Request messages to be sent
+The zone ID is the interface index of the default route (::/0) with the lowest metric
+This step might not succeed if the default router is filtering all ICMPv6 messages.
+netsh interface ipv6 show route
+route print
+Ping a remote destination by its IPv6 address
+tracert –d IPv6Address
+trace the routing path to the remote destination
+–d command line option prevents the Tracert tool from performing a DNS reverse query on every near-side router interface in the routing path, which speeds up the display of the routing path
+Check Packet Filtering
+IPsec for IPv6 policies that have been configured with the Ipsec6 tool
+The simple IPv6 firewall
+Windows Firewall
+
+
+View and Manage the Local IPv6 Routing Table
+view the IPv6 routing table
+route print
+netstat –r
+netsh interface ipv6 show route
+add a route to the IPv6 routing table
+netsh interface ipv6 add route
+modify an existing route
+netsh interface ipv6 set route
+remove an existing route
+netsh interface ipv6 delete route
+
+Verify Router Reliability
+trace the path to a destination and display information on packet losses for each router and link in the path
+–d command line option prevents the Pathping tool from performing a DNS reverse query on every near-side router interface in the routing path, which speeds up the display of the routing path.
+pathping –d IPv6Address
+
+
+Verifying DNS Name Resolution for IPv6 Addresses
+the following tasks to troubleshoot problems with DNS name resolution
+Verify DNS configuration
+Display and flush the DNS client resolver cache
+Test DNS name resolution with the Ping tool
+Use the Nslookup tool to view DNS server responses
+
+Verify DNS Configuration
+On the node having DNS name resolution problems, verify the following:
+Host name
+The primary DNS suffix
+DNS suffix search list
+Connection-specific DNS suffixes
+DNS servers
+obtain this information
+ipconfig /all
+obtain information about which DNS names should be registered in DNS
+netsh interface ip show dns
+add the IPv6 addresses of additional DNS servers
+netsh interface ipv6 add dns
+register the appropriate DNS names as IPv6 address resource records (also known as AAAA resource records) with DNS dynamic update,
+ipconfig /registerdns
+
+
+Display and Flush the DNS Client Resolver Cache
+display the contents of the DNS client resolver cache
+ipconfig /displaydns
+flush the contents of the DNS client resolver cache and reload it with the entries in the Hosts file
+ipconfig /flushdns
+
+Test DNS Name Resolution with Ping
+To test DNS name resolution, use the Ping tool and ping a destination by its host name or FQDN. The Ping tool display shows the FQDN and its corresponding IPv6 address.
+
+Use the Nslookup Tool to View DNS Server Responses
+If the Ping tool is using the wrong IPv6 address, flush the DNS client resolver cache and use the Nslookup tool to determine the set of addresses returned in the DNS Name Query Response message
+At the Nslookup > prompt, use the set d2
+display the maximum amount of information about the DNS response messages
+use Nslookup to look up the desired FQDN. 
+Look for AAAA records in the detailed display of the DNS response messages.
+
+
+Verifying IPv6-based TCP Sessions
+If reachability and name resolution are working but you cannot establish a TCP connection with a destination host, use the following tasks:
+Check for packet filtering
+Verify TCP connection establishment
+ 
+Verify TCP Session Establishment
+verify that a TCP connection can be established using a known destination TCP port number
+telnet IPv6Address TCPPort
+verify whether the Web server service on the computer with the IPv6 address of 3FFE:FFFF::21AD:2AA:FF:FE31:AC89 is accepting TCP connections on TCP port 80
+telnet 3ffe:ffff::21ad:2aa:ff:fe31:ac89 80
+https://docs.microsoft.com/en-us/previous-versions/tn-archive/bb727023(v=technet.10) 
+==========================================================================================================
+
+to shutdown or reboot a machine, including your own, in a simple scheduled task
+shutdown –r –t 0 –m \\localhost
+
+Scan for open ports for specific IP/host
+nmap -n -sV 192.168.1.4
+Scan for open ports for a network
+nmap -n -sV 192.168.1.0/24
+
+#System
+enable the local administrator account
+net user administrator * /active:yes
+
+see all the open files on a system
+openfiles /query
+
+reset IIS without having to reboot the whole server
+iisreset
+
+To check if server is virtual.
+On Windows
+CMD:
+Systeminfo | findstr /i model
+powershell:
+gwmi -q "select * from win32_computersystem"
+
+determine if the current version of Windows is either 32-bit or 64-bit from the command line
+echo %PROCESSOR_ARCHITECTURE%
+check the PROCESSOR_ARCHITECTURE environment variable. 64-bit systems will say AMD64 and 32-bit systems should say "x86"
+C:\>wmic OS get OSArchitecture
+OSArchitecture
+32-bit
+
+
+To display the MD5/SHA256 etc. hash of a file, type the following command at a command prompt:
+# downloaded files
+04/06/2019  11:39     3,353,227,264 kali-linux-2019.2-amd64.iso
+04/06/2019  11:38                94 kali-linux-2019.2-amd64.iso.txt.sha256sum
+>certutil -hashfile kali-linux-2019.2-amd64.iso SHA256
+SHA256 hash of kali-linux-2019.2-amd64.iso:
+67574ee0039eaf4043a237e7c4b0eb432ca07ebf9c7b2dd0667e83bc3900b2cf
+CertUtil: -hashfile command completed successfully.
+>certutil -hashfile -?
+
+
+AD Shortcuts
+
+dsa.msc                                Active Directory Users and Computers
+adsiedit.msc                    ADSI Edit
+AdRmsAdmin.msc                Active Directory Rights Managment Services Administration
+azman.msc                            Authorization Manager
+certsrv.msc                        Active Directory Certificate Services
+CluAdmin.msc                    Failover Cluster Manager
+dfsmgmt.msc                        DFS Managment
+dhcpmgmt.msc                    DHCP Management
+dnsmgmt.msc                        DNS Management
+domain.msc                        Active Directory Domains and Trusts
+fsrm.msc                            File Server Resource Manager
+gpmc.msc                            Group Policy Management Console
+gpme.msc                            Group Policy Management Editor
+lsdiag.msc                        Remote Desktop Licensing Diagnoser
+remoteprograms.msc        RemoteApp Manager
+rrasmgmt.msc                    Routing and Remote Access
+sbmgr.msc                            Remote Desktop Connection Manager
+tsadmin.msc                        Remove Desktop Services Manager
+tsconfig.msc                    Remove Desktop Session Host Configuration
+tsmmc.msc                            Remote Desktops
+winsmgmt.msc                    WINS Management
+WSRM.msc                            Windows System Resource Manager
+
+
+
+Local Computer Shortcuts 
+
+gpedit.msc                Local Group Policy Editor
+fsmgmt.msc                Shared Folders
+eventvwr.msc            Event viewer
+certlm.msc                Certificates – Local Computer
+certmgr.msc                Certificates – Local Users
+certtmpl.msc            Certificates Templates Console
+appwiz.cpl                Programs and Features
+Firewall.cpl            Windows Firewall
+compmgmt.msc            computer management
+psr.exe                     steps recorder
+comexp.msc                Component Services
+devmgmt.msc                Device Manager
+diskmgmt.msc            Disk Management
+lusrmgr.msc                Local Users and Groups
+ncpa.cpl                    Network Connections
+perfmon.msc                Performance Monitor
+sysdm.cpl                    System Properties
+WF.msc                        Windows Firewall with Advanced Security
+
+
+Windows Run Commands Shortcuts
+
+Control Panel Program Shortcuts
+control                                 Control Panel
+control netconnections     Network Properties
+control printers                 Printers Folders
+control userpasswords2     Manager all User Accounts
+control update                     Windows Update
+control admintools             Administrative Tools
+control schedtasks             Scheduled Tasks
+appwiz.cpl                             Program and Features
+intl.cpl                                 Regional Settings (International)
+sysdm.cpl                             System Properties
+firewall.cpl                         Windows Firewall
+
+Windows Tools
+
+explorer            Windows Explorer
+regedit             Registry Editor
+services.msc     Windows Services (local)
+taskmgr             Task Manager
+msconfig             System Configuration Utility
+mstsc                 Remote Desktop (Microsoft Terminal Services)
+logoff                 Log Off Windows (without confirmation!
+shutdown             Shuts Down Windows (don't try unless you are ready to shutdown)
+msinfo32             System Information
+
+verify file signatures
+fciv gpg4win-2.2.5.exe -sha1
+fciv gpg4win-2.2.5.exe -md5
+fciv gpg4win-2.2.5.exe -sha1 > filedownloaded.txt
+fciv gpg4win-2.2.5.exe -md5    > filedownloaded.txt
+
+#Network Tools
+
+Network Monitor
+Nagios Core
+OpenNMS
+Advanced IP Scanner
+Messsage Analyzer
+Capsa Free
+Wireshark
+Fiddler
+NetworkMiner
+Zenoss Core
+Pandora FMS
+Xirrus Wi-Fi Inspector
+WirelessNetView
+Xymon
+NetXMS
+Total Network Monitor
+Icinga 2
+Angry IP Scanner
+Splunk
+The Dude
+PRTG Network Monitor Freeware
+
+System Tools
+Shadow Explorer
+
+Security Tools
+Malwarebytes Anti-Malware
+Hitman Pro3
+
+Data Recovery Tools
+Data Recovery Wizard Free 9.0
+R-STUDIO
+Recuva
+#Tools
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+windows 10 usb readonly troubleshooting
+insert usb
+run cmd
+diskpart
+list disk
+select disk x
+attributes disk clear readonly
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+###  look for anomalous behavior within the Windows environment
+
+## look for unusual processes and services
+windowskey + R + taskmgr.exe
+windowskey + R + cmd
+# displays a list of running services. Getting a PID can be useful for using the taskkill command to end the questionable process
+tasklist
+# display all processes, executable path and much more
+wmic process list full
+# will display a list of all processes along with their corresponding PID, and services that are tied to them
+tasklist /svc
+# look for unusual services
+# GUI
+services.msc
+# command prompt
+net start
+sc query
+
+# use regedit to look for unusual entries
+# three registry entries will contain startup configurations for specific programs, including malware.
+windowskey + R + regedit
+HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+HKLM\Software\Microsoft\Windows\CurrentVersion\Runonce
+HKLM\Software\Microsoft\Windows\CurrentVersion\RunonceEx
+
+reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+
+## look for unusual network usage
+# displays shared folders that are on the system, shared folders that are not supposed to be there
+net view \\127.0.0.1 
+net view localhost
+# displays open sessions with other systems on the network
+net session
+# which sessions this machine has opened with other systems
+net use
+# display NetBIOS activity over TCP/IP 
+nbstat –S
+# Look for unusual listening TCP and UDP ports
+netstat –na
+# continuously updated and scrolling output of this command every 5 seconds
+netstat –na 5
+# The –o flag shows the owning process id
+netstat –nao
+netstat –nao 5
+# The –b flag shows the executable name and the DLLs loaded for the network connection
+netstat –naob5
+#  check Windows Firewall configuration
+netsh firewall show config
+
+## look for unusual start up (or scheduled) tasks
+# displays all startup configurations from services to files in the startup folder
+# useful for disabling anything trying startup during Windows login or boot-up
+msconfig
+# displays tasks schedule to run at specific times
+schtasks
+# displays all of the services and programs that startup when Windows boots and/or upon Windows login
+wmic startup list full
+
+## look for unusual accounts
+# looking for local accounts on a machine
+lusrmgr.msc
+# displays all user accounts on a local machine
+net user
+# display all local administrator user accounts, finding administrator accounts that do not belong on a particular machine
+net localgroup administrators
+
+##  look for unusual behavior is within event viewer
+windowskey + R + eventvwr.msc
+# Look for warnings, errors, and other events,failed logon attempts,ocked out accounts
+“Event log service was stopped.”
+“Windows File Protection is not active on this system.”
+"The protected System file [file name] was not restored to its original, valid version because the Windows File Protection..."
+“The MS Telnet Service has started successfully.”
+
+# If the log files are missing, it is a reliable indicator that the machine has been or is compromised and the intruder is trying to hide his\her tracks
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+# steganography, attaching a .rar file to a .jpg etc.
+ copy /b input.jpg + input.rar ouput.jpg
+ ------------------------------------------------------------------------------------------
+ # Using PsTools to Control Other PCs from the Command Line
+    PsExec – executes processes on a remote computer
+    psexec \\computername -u User -p Password ipconfig
+    psexec \\computername  ipconfig
+    psexec \\computername <options> xxx.exe <arguments>
+    PsFile – shows files that are opened on the remote computer through the network
+    PsGetSid – displays the security identifier for a computer or user
+    PsInfo – lists information about a system
+    psinfo \\IP
+    PsKill – kills processes by name or ID
+    PsList – list information about processes on the command line
+    PsLoggedOn – list accounts that are logged on either on the machine or connecting remotely
+    PsLogList – pull the event log on the command line
+    PsPasswd – change the password for users
+    PsPing – a fairly simple ping utility with some additional features
+    PsService – list and make changes to Windows services
+    PsShutdown – shut down, log off, or suspend a computer
+    PsSuspend – suspend and resume processes (rather than killing them)
+------------------------------------------------------------------------------------------
+change DNS settings
+PS C:\> Set-DnsClientServerAddress -InterfaceIndex 12 -ServerAddresses ("10.0.0.1","10.0.0.2")
+------------------------------------------------------------------------------------------
+# powershell 
+
+Execute command2 after execution of command1 has finished
+command1 -f & command2
+Execute command2 only if execution of command1 has finished successfully
+command1 -f && command2
+Execute command2 only if execution of command1 has finished unsuccessfully
+command1 -f || command2
+------------------------------------------------------------------------------------------
+chocolatey
+
+- choco install python --version 3.8.1
+------------------------------------------------------------------------------------------

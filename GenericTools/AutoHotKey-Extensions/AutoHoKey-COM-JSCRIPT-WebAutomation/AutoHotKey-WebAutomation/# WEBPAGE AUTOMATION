@@ -1,0 +1,1069 @@
+# WEBPAGE AUTOMATION
+
+http://www.autohotkey.com/forum/viewtopic.php?t=30599&start=0&postdays=0&postorder=asc&highlight=
+
+
+
+OK here goes.
+I been getting alot of hits on
+Automation IE7 Navigation and Scripting with Tabs
+Thank you all who use it.
+before we go any further i want to make clear the point of this.
+This whole topic is centered around the concepts involved in working with Web Pages over the internet using AHK
+
+Below is required knowledge before taking on any serious web page automation work
+
+https://w3schools.com/
+http://www.autohotkey.com/forum/viewtopic.php?t=30599&start=0&postdays=0&postorder=asc&highlight=
+https://ahknet.autohotkey.com/~Sean/Lib/COM.zip
+
+What i will not cover
+DHTML its far too well documented if you dont understand DHTML go to <!-- m -->http://w3schools.com<!-- m -->
+DOM - document object model also at that site
+javascript - a very common scripting language executed by the browser to creat rich content and react to user driven events within html.
+
+
+Step 1
+Choose a Browser
+Options include
+Internet Explorer- widely used on all windows based PC's aprox 2/3 of all browsers on the webFirefox - Second most popular browser on the web widely usedIwebrowser object on all windows based pc's usually used in the AHK gui controlMozilla ActiveX via mozctlx.dll
+I use the iwebrowser object or internet explorer in most if not all of my automation tasks because its what im familar with
+but your choice of browser does necesarily impact your method of working with the web page
+
+Step 2
+Choose your scripting poison
+Pass javascript thru the address bar example - javascript:alert('javascript executed'); knowing dom you will recognise this as the method used in hyperlinks to execute script setbacks include not able to parse non visible data to your ahk script
+strength easy to learn supports both Firefox and IE as long as the necesary tab is pre selected.COM.ahk. thanks sean a little steep learning curve requires in many case the most basic win32 com understandingAutomation IE7 Navigation and Scripting with Tabs a mixture of COM Fucntions and javascript bridges the knoledge gap between win32 com functions and javascript hopefully increasing usablility without needing to understand COMI - macros - external to ahk this is a firefox automation solution excl;usively to deal with web pages in firefoxCurl - external program to ahk that can be controled via ahk manyform and link based functions easy to learn for most
+URLDownload to file - then parse the file for wehat you need entirely using ahk
+Note - While many will favor use of Firefox no scriptset that i am at the time of writing know of, can interact with applications outside of firefox. the usuall point of web automation is to import data from an application like excell or a csv into a web form.
+
+COM offers the most versitility in this as it can be used to easily control IE and Iwebrowser objects as well as work with others windows based programs and invoke methods native to that application
+
+Step 3
+Choose a data source
+CSV - AHK can handle parsing this file most users can utilise the tutorials and help file for this level of knowledgeAnother web page - the technology you chose in step 2 will cover what you need here unless its CURL which doesnt parse dataanother windows based application most of the time this means learnign some basics of COM fortunately sean has gone to great lenghts to create libraries of helpful functions form most of these
+
+
+I certainly hope that every one finds this usefull
+
+EDIT:
+Next we will focus on the use of the functions
+
+IE7_Get(title,url="http")Since we are working with DOM we want to focus on getting the topmost dom window object "parentWindow"
+the function compares the title with the document.title since at the point of comparison the document hasnt been parsed it uses the browser title. ever notice the browser title is the same as the documents title tag. check any web page you like. in absense the page url is used.
+title may be a non case sensitive partial match only since we will use ahk's ifinstring.
+all for now catch u later
+
+
+
+
+
+
+
+
+all commands work
+but the execScript, to execute functions from the Navigate Doc
+is not executing
+what is the object to execute function ?
+how I can simulate with COM_Invoke to run JS function+it's params ?
+
+here is some sample code:
+;
+;#Include CoHelper.ahk
+#Include COM.ahk
+main:
+gosub,IEconnect ;
+
+qryString := "My First Query" ;
+gosub,httpRequest ;
+gosub,httpResponse ;
+
+return
+
+IEconnect:
+
+COM_Init() ;
+
+oIE := COM_CreateObject("InternetExplorer.Application")
+COM_Invoke(oIE, "Visible=", "True") ;"False" ;"True" ;
+URL := "http://LocalHost/XMLHttpRequest.htm"
+COM_Invoke(oIE, "Navigate", URL)
+oDoc := COM_Invoke(oIE,"Document")
+oWin :=COM_Invoke(oDoc, "parentWindow")
+msgbox , active IE url: %URL%
+gosub,ReadyState
+;oPhpReq = Invoke(oIE,"PhpReq")
+
+return
+
+httpRequest:
+JSexec := "httpRequest(" . chr(34) . qryString . chr(34) . ")" ;
+JSexec := "alert('JS exec alert')"
+msgBox, JS: %JSexec%
+COM_Invoke(oIE,"execScript",JSexec) ; <------------- not working
+o := COM_Invoke(oDoc,"getElementById","cmdHttp")
+return
+
+httpResponse:
+o := COM_Invoke(oDoc,"getElementById","msg")
+text := COM_Invoke(o,"innerHTML")
+o := COM_Invoke(oDoc,"getElementById","job")
+count := COM_Invoke(o,"innerHTML")
+msgBox , text %text% count %job%
+
+return
+
+
+ReadyState:
+
+Loop
+{
+state:= COM_Invoke(oIE, "readyState")
+msgbox, URL ready state %URL% state %state%
+If state <> 4
+Sleep, 500
+Else
+Break
+}
+return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;~ ******************************************************************************************
+;~ ******************************************************************************************
+;~ IE 7 functions
+;~ ******************************************************************************************
+;~ ******************************************************************************************
+;~ function list
+;~ IE7_Get(title,url="http") gets iwebrowser interface pointer and returns automation dhtml window obj ie parentWindow used itn the below functions
+;~ IE7_Navigate(parentWindow,url)  Navigate and wait for page Load to complete in same frame
+;~ IE7_ExecuteJS(parentWindow, JS_to_Inject, VarNames_to_Return="") Full insertion of javascript or execution or retrieval of new or existing fucntions or variables
+;~ IE7_readyState(parentWindow) wait for page Load to complete
+;~ IE7_Quit(parentWindow) Closes Window
+;~ IE7_New(url) Loads a new window even if one does not currently exist and wait for page Load to complete in same frame
+;~ IE7_Click_Text(parentWindow,innerHTML)Clicks a link byt text in the inner html of the a tag and wait for page Load to complete in same frame
+;~ IE7_Click_Element(parentWindow,ID1=0) ; clicks first element it finds to match returns error if not found will also trigger readystate
+;~ IE7_Button_click(parentWindow,value)Click a button based on the text of the button and wait for page Load to complete in same frame
+;~ IE7_Get_DOM(parentWindow,ID1)retreive a dom object by index of all collection id or name attribute
+;~ IE7_Set_DOM(parentWindow,ID1,val="innerHTML") set  a dom object by index of all collection id or name attribute
+;~ ******************************************************************************************
+;~ ******************************************************************************************
+IE7_Get(title,url="http")
+{
+;~    title is required and is not case sensitive
+;~    url is optional and since . exists in all url schemas it will allow un entered url to default to first found
+;~  loop thru open windows for a match
+   Loop, %   COM_Invoke(psw := COM_Invoke(psh:=COM_CreateObject("Shell.Application"), "Windows"), "Count")
+   {
+      If ( InStr(LocationName:=COM_Invoke(pwb:=COM_Invoke(psw, "Item", A_Index-1), "LocationName"),title,0)) && (InStr(taburl:=COM_Invoke(pwb, "LocationURL"),url,0) )
+      {
+         parentWindow:=COM_Invoke(Document:=COM_Invoke(pwb, "Document"), "parentWindow")
+         COM_Release(pwb),COM_Release(Document)
+         Break
+      }
+         COM_Release(pwb),COM_Release(Document)
+   }
+   COM_Release(psw),COM_Release(psh) ; release the objects each loop itineration
+   if parentWindow is integer
+   {
+      return parentWindow
+   }
+   else
+   {
+      Return A_LastError    
+   }
+}
+
+;~ Navigate the given window
+IE7_Navigate(parentWindow,url) ; begins navigation process and holds execution till page has loaded fully
+{
+;~    parent windw is a Dom window object
+   if parentWindow is integer
+   {   
+      result:=COM_Invoke(parentWindow, "Navigate",url) ;execute the navigation returns SOK 
+      IE7_readyState(parentWindow) ;Holds till document onload event is ready
+      Return result 
+   }
+}
+
+
+IE7_ExecuteJS(parentWindow, JS_to_Inject, VarNames_to_Return="") ;execute some js on a tab returns comma delimited list of vars if specified
+{
+   if parentWindow is integer
+   {
+
+      If JS_to_Inject
+         COM_Invoke(parentWindow, "execScript",JS_to_Inject)
+      If VarNames_to_Return
+      {
+         StringSplit, Vars_, VarNames_to_Return, `,
+         Loop, %Vars_0%
+            Ret .= COM_Invoke(parentWindow,Vars_%A_Index%) . ","
+         StringTrimRight, Ret, Ret, 1
+         Return Ret
+      }
+         Else
+         Return 0
+   }
+   Else
+      Return error
+}
+IE7_readyState(parentWindow) ;pauses till there is no loading activity returns DOM window handle
+{
+   
+   
+   if parentWindow is integer
+   {
+      loop 120{ ;limit to 60 seconds
+         Sleep, 500
+         rdy:=IE7_ExecuteJS(parentWindow, "var rdy=document.readyState","rdy") ; best method
+         If (rdy = "complete") ;Better to use the document readystate more consistent page load results
+            break
+         }
+      Return 0
+   }
+   else
+      Return A_LastError   
+   
+}
+IE7_Quit(parentWindow) ;Close a DOM window handle
+{
+   COM_Invoke(parentWindow, "execScript","window.opener='top';window.close();")
+}
+
+IE7_New(url) ;only if at least one IE window already exists return parentWindow js accessable object returns DOM window handle
+{
+   run http://Google.com
+   winwait,Google
+   parentWindow:=IE7_Get("Google")
+   IE7_Navigate(parentWindow,url)
+   return parentWindow ; object handle
+}
+
+
+IE7_Click_Text(parentWindow,innerHTML) ; searches a tags and clicks first text it finds to match returns error if not found will also trigger readystate
+{
+   js=
+   (
+      var links=document.links;
+      var count=links.length;
+   )
+   
+   count1 := IE7_ExecuteJS(parentWindow, js, "count")
+   loop, % count1
+   {
+   
+      js=
+      (
+         var text=document.links(%A_Index%-1).innerHTML;
+      )
+      text1 := IE7_ExecuteJS(parentWindow, js, "text")
+      IfNotInString,text1,%innerHTML%
+      Continue ;skip the rest and go to next loop
+      js=
+      (
+         document.links(%A_Index%-1).click();
+      )
+      IE7_ExecuteJS(parentWindow, js)     
+      Break
+   }
+IE7_readyState(parentWindow) ; wait for page change to finish
+Return
+}
+
+IE7_Click_Element(parentWindow,ID1=0) ; clicks first element it finds to match returns error if not found will also trigger readystate
+{
+   clickme=
+   (
+     
+   if (isNaN("%ID1%")){ // determins if an index or id is entered
+         document.all("%ID1%").click();
+      }else{ // must be an index
+         document.all(%ID1%).click();
+      }
+     
+   )
+   
+   COM_Invoke(parentWindow, "execScript",clickme)
+IE7_readyState(parentWindow) ; wait for page change to finish
+Return
+}
+
+IE7_Button_click(parentWindow,value) ;Searches input tags for type button then compares the value with the sought text if found clicks returns error if not found will also trigger readystate
+{
+   button_click=
+   (
+   var i=0;
+   while (i<document.all.length)
+   {
+      var tag=document.all(i).tagName;
+      if (tag.toLowerCase()=='input')
+      {
+         var typ=document.all(i).type;
+         if (typ.toLowerCase()=='button' || typ.toLowerCase()=='submit' || typ.toLowerCase()=='reset')
+         {
+            var myVal=document.all(i).value;
+            var theVal='%value%';
+            if (myVal.toLowerCase()==theVal.toLowerCase())
+            {
+               document.all(i).click(); //click the button
+               tag=undefined;
+               typ=undefined;
+               break; // end the loop
+            }
+         }
+      }
+      i=i+1;
+   }
+
+)
+IE7_ExecuteJS(parentWindow, button_click)
+IE7_readyState(parentWindow) ; wait for page change to finish
+Return
+}
+
+;~ IE7_Get_DOM(parentWindow,ID,val="innerHTML",method="ID" )
+;~ parentWindow assigned by IE7_Get(title,url="http") and must be an integer that represents a dom window handle
+;~ ID will be an element id, index of all
+IE7_Get_DOM(parentWindow,ID1) ;gets DOM object by ID Tag and returns string or error
+{
+   get_=
+   (
+   if (isNaN("%ID1%")){ // determins if an index or id is entered
+         var tag=document.all("%ID1%").tagName;
+         var i=1;
+      }else{ // must be an index
+         var tag=document.all(%ID1%).tagName;
+         var i=2;
+      }
+   var tag1=tag.toLowerCase();
+   
+   
+
+   switch(tag1)
+      {
+      case "input":
+        var t=1;
+        break;   
+      case "textarea":
+        var t=1;
+        break;   
+      case "select":
+        var t=1;
+        break;
+      default:
+        var t=2;
+      }
+   if(i==1 && t==1)
+      var myVal=document.all("%ID1%").value;
+   else if(i==2 && t==1)
+      var myVal=document.all(%ID1%).value;
+   else if(i==1 && t==2)
+      var myVal=document.all("%ID1%").innerHTML;
+   else if(i==2 && t==2)
+      var myVal=document.all(%ID1%).innerHTML;
+     
+        var t=0;
+        var i=0;
+        var tag1=0;
+        var tag=0;
+   )
+   myVal:=IE7_ExecuteJS(parentWindow, get_,"myVal")
+   IE7_ExecuteJS(parentWindow, "var myVal='undefined';")
+   Return myVal
+}
+
+IE7_Set_DOM(parentWindow,ID1,val="innerHTML") ;gets DOM object by ID Tag and returns string or error
+{
+   set_=
+   (
+   if (isNaN("%ID1%")){ // determins if an index or id is entered
+         var tag=document.all("%ID1%").tagName;
+         var i=1;
+      }else{ // must be an index
+         var tag=document.all(%ID1%).tagName;
+         var i=2;
+      }
+   var tag1=tag.toLowerCase();
+   
+   
+
+   switch(tag1)
+      {
+      case "input":
+        var t=1;
+        break;   
+      case "textarea":
+        var t=1;
+        break;   
+      case "select":
+        var t=1;
+        break;
+      default:
+        var t=2;
+      }
+   if(i==1 && t==1)
+      document.all("%ID1%").value='%val%';
+   else if(i==2 && t==1)
+      document.all(%ID1%).value='%val%';
+   else if(i==1 && t==2)
+      document.all("%ID1%").innerHTML='%val%';
+   else if(i==2 && t==2)
+      document.all(%ID1%).innerHTML='%val%';
+        var t=0;
+        var i=0;
+        var tag1=0;
+        var tag=0;
+   )
+   IE7_ExecuteJS(parentWindow, set_)
+   Return
+}
+IE7_SetFrame_Form_DOM(parentWindow,FRM,FOM,ID1,val=0) ;gets DOM object by ID Tag and returns string or error
+{
+   if FRM is integer
+      ahkframe:="document.frames(" . FRM . ")"
+   Else
+      ahkframe:="document.frames('" . FRM . "')"
+   if FOM is integer
+      ahkform:=ahkframe . ".document.forms(" . FOM . ")"
+   Else
+      ahkform:=ahkframe . ".document.forms('" . FOM . "')"
+   if ID1 is integer
+      ahkele:=ahkform . ".elements(" . ID1 . ")"
+   Else
+      ahkele:=ahkform . ".elements('" . ID1 . "')"
+   
+   tagName:=IE7_ExecuteJS(parentWindow, "var tagName=" . ahkele . ".tagName;" , "tagName")
+   teststring:="inputselecttextarea"
+   IfInString,teststring,%tagName%
+      domString := ahkele . ".value"
+   Else
+      domString := ahkele . ".innerHTML"
+   if val
+      Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . "='" . val . "';","oDom")
+   Else
+      Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . ";","oDom")
+   Return
+}
+
+
+IE7_SetFrame_DOM(parentWindow,FRM,ID1,val=0) ;gets DOM object by ID Tag and returns string or error
+{
+   if FRM is integer
+      ahkframe:="document.frames(" . FRM . ")"
+   Else
+      ahkframe:="document.frames('" . FRM . "')"
+   if ID1 is integer
+      ahkele:=ahkframe . ".document.all(" . ID1 . ")"
+   Else
+      ahkele:=ahkframe . ".document.all('" . ID1 . "')"
+   
+;~    tagName:=IE7_ExecuteJS(parentWindow, "var tagName=" . ahkele . ".sourceIndex;" , "tagName")
+;~    MsgBox % tagName
+   tagName:=IE7_ExecuteJS(parentWindow, "var tagName=" . ahkele . ".tagName;" , "tagName")
+   teststring:="inputselecttextarea"
+   IfInString,teststring,%tagName%
+      domString := ahkele . ".value"
+   Else
+      domString := ahkele . ".innerHTML"
+   if val
+      Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . "='" . val . "';","oDom")
+   Else
+      Return IE7_ExecuteJS(parentWindow, "var oDom=" . domString . ";","oDom")
+   Return
+}
+
+
+
+
+COM_Init()
+run iexplore.exe http://www.autohotkey.com/
+WinWait,AutoHotkey,,5
+sleep,1000
+myPageHandle:=IE7_Get("autohotkey")
+;~ MsgBox % myPageHandle
+IE7_readyState(myPageHandle) ;  waits for onload event of a webpage even if an onload isnt fired
+IE7_Click_Text(myPageHandle,"forum") ; cycles thru the links collection and clicksthe first text match it finds then waits for the page load to complete
+
+IE7_Click_Text(myPageHandle,"search")
+IE7_Set_DOM(myPageHandle,"search_keywords","PLEASE HELP!! why is my thingy not working as expected?") ;example of filling out a form
+IE7_Button_click(myPageHandle,"search")
+IE7_Click_Text(myPageHandle,"PLEASE HELP!! why is my thingy not working as expected?")
+MsgBox, 262192, Meet the Robinsons, Please Read the first Post before asking me any questions, 5
+IE7_Click_Text(myPageHandle,"search")
+IE7_Set_DOM(myPageHandle,"search_keywords","Automation IE7 Navigation and Scripting with Tabs") ;example of filling out a form
+IE7_Button_click(myPageHandle,"search") ; click a button labeled search and wait for the page to load
+IE7_Click_Text(myPageHandle,"Wait for page to load before execute next command")
+MsgBox, 262192, Automation IE7 Navigation and Scripting with Tabs, 5
+COM_Term()
+ExitApp
+
+
+
+
+
+
+
+
+
+
+
+@ell
+first of all dont take this wrong but
+use code tags
+second
+execScript is a method of a window object
+so should be used on
+oWin not oIE
+incorrect
+COM_Invoke(oIE,"execScript",JSexec)correct
+COM_Invoke(oWin,"execScript",JSexec)
+otherwise very good looking script
+Never lose.
+WIN or LEARN.
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+I'm just saying that it's a good idea to organize your thread rather than make people read every page of it.
+
+rani
+Members
+217 posts
+ Last active: Jul 21 2016 12:53 PM
+Joined: 18 Mar 2008
+Hi Tank
+
+1.
+I found the problem on the above execScript, thanks to your advice:
+
+the Objects hirarchy to parentWindow are:
+WebBrowser.Document.parentWindow
+
+and in our case:
+oIE.oDoc.oWin
+
+the mistake was that I wrote oWin directly under the oIE(obj WebBrowser)
+
+now both JS functions work correctly !
+
+2. how I can iterate on all DOM components, and filter on let say 'INPUT' tag's in a specific web Page, and get/set value's for specific elements ?
+
+any little sample code in AHK will be appreciated.
+
+3. [code=auto:0] tag tank:
+immediatedly after my post I understand my mistake.
+now I know how to send code sample.
+
+
+rgrds
+Ell
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+Hi Tank
+
+1.
+I found the problem on the above execScript, thanks to your advice:
+
+the Objects hirarchy to parentWindow are:
+WebBrowser.Document.parentWindow
+
+and in our case:
+oIE.oDoc.oWin
+
+
+I simply could not find it in myself to in such an eloquent way illistrate that
+thank you that alone will likely help folks out a bunch
+
+in general the all collection ca be itenerated the following ways
+document.all(n)
+wehre n is an integer usually i use a_index in a loop for this
+document.all('name or id attribute in single quote')
+by default all will return the first item matching this criteria you can further naro down such as the case of using a name on radio buttons
+document.all('name or id attribute in single quote')(n)
+
+document.all('tagName')
+will return a collection of all items in the source with that tag name
+most ofteh you would do something like this
+
+var x=document.all('tagName');
+x[any of the abovename or id attribute or index of this collection here]
+example
+
+var x=document.all('input');
+x[0].value='thisvalue';the above would returnx as a collection of all input tags
+this ignores select(dropdown menus)
+and then sets the first input element found to thisvalue
+
+hope this helps a bit
+Never lose.
+WIN or LEARN.
+
+rani
+Members
+217 posts
+ Last active: Jul 21 2016 12:53 PM
+Joined: 18 Mar 2008
+var x=document.all('input');
+x[0].value='thisvalue';
+
+
+how is the syntax to do it with AHK ?:
+means
+
+1. find the webpage oject (it's document instance or win Handle)
+
+2. run on the document.all components
+
+
+rgrds
+Ell
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+i am really surprised you dont get this ell
+given that you converted some vb automation script to com
+
+so here goes
+firstly there is the obvious answer execute it as is as javascript
+as far i guess your looking for a com approach
+; note that unfortunatly this method is case sensitivew which is why i perfer the js approach
+COM_Invoke(COM_Invoke(COM_Invoke(COM_Invoke(oIE,"Document"),"all","input") ,"Item",0),"value="),"thisvalue")
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+I'm just saying that it's a good idea to organize your thread rather than make people read every page of it.
+
+try to understand this thread for me is done less than 10 minutes at a time and i rarely have any time to devote to it
+in most cases it relies on a firm understanding of javascript and is designed for individuals comming to ahk with a firm background using DHTML
+I just dont have the time to devote would you rather i didnt share at all
+i have linked out to the sites that gave me all the back ground info to create them in the first place so conceivably someone could use this to understand and use the examples i have given to create there own documentation
+
+
+Understand i do very much intend to add more documentation and examples for novice users but time is not conducive to this any time soon
+Never lose.
+WIN or LEARN.
+
+rani
+Members
+217 posts
+ Last active: Jul 21 2016 12:53 PM
+Joined: 18 Mar 2008
+firstly there is the obvious answer execute it as is as javascript
+as far i guess your looking for a com approach
+COM_Invoke(COM_Invoke(COM_Invoke(COM_Invoke(oIE,"Document"),"all","input") ,"Item",0),"value="),"thisvalue")
+
+
+tank ,
+pls note that I need to execute the javascript from AHK
+how I can use javascript commands (as is)
+from AHK ?
+means:
+build javascript code, maintain it's instance,
+and run it+it's enviromental var's ?
+I think I need some COM_Invoke commands or else ?
+
+rgrds
+Ell
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+so confused but ok
+one more time
+var x=document.all('input');
+x[0].value='thisvalue';is the js example
+you clearly know how to execute js per your previous post
+I am a little lost on what you dont get
+
+the js object variable x has the follwoing lifetime, and can be called and used untill the page is navigated or refreshed
+in other words you can call it with the executescript over and over if you like
+even between script calls
+the variable x is stored in the rendered page displayed on your screen not in ahk
+js_Inputs=
+(
+var x=document.all('input');
+x[0].value='thisvalue';
+)
+COM_Invoke(oWin,"execScript",js_Inputs)so then lets read those values
+; set a js value using he previously created js object x
+COM_Invoke(oWin,"execScript","var thisjsval=x[0].value;")
+;use an ahk message box to display the value
+msgbox % COM_Invoke(oWin,"thisjsval")I am really not sure how much depth here but if you cant figure it out from here then i suggest giving whatever project you are undertaking to someone
+If you take the time to read in detail the posts and functions you will see this is used extensively thru out my scripts
+
+
+
+
+Logo
+Log in with FacebookLog in with Twitter Sign In Create Account
+AUTOHOTKEY
+FORUMS
+MEMBERS
+Advanced
+placeholder
+THIS TOPIC
+FacebookTwitter
+AutoHotkey Community
+AutoHotkey
+Scripts and Functions
+View New Content
+Photo
+Automation IE7 Navigation and Scripting with Tabs
+Started by tank , Apr 09 2008 03:14 PM
+
+« prevPage 4 of 15 2 3 4 5 6next »
+This topic is locked This topic is locked
+214 replies to this topic
+Poll: Do you find this group pf wrapper functions for IE Automation Usefull (35 member(s) have cast votes)
+Do you find this group pf wrapper functions for IE Automation Usefull
+no you suck (3 votes [8.33%])
+need better Documentation (10 votes [27.78%])
+What is DHTML i dont understand how this helps (4 votes [11.11%])
+I use Firefox this is a stupid idea (10 votes [27.78%])
+I know DHTML this is a reasonably good AHK adaption (2 votes [5.56%])
+This is the best DHTML too in the AHK Forum (7 votes [19.44%])
+
+
+rani
+Members
+217 posts
+ Last active: Jul 21 2016 12:53 PM
+Joined: 18 Mar 2008
+Hi Tank,
+
+ok, now I understand the functionality of JS and AHK
+
+
+what remain:
+how I find an instance of specific,web page documnet
+let say in IE6 ?
+
+rgrds
+Ell
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+that is specifically what IE7_Get does
+first page mid way down
+returns a window handle equal to what you do with oWin in your example script
+the difference is i reference shell explorer but for a windows box its perfect
+oh i think i see your confusion the functions are IE7
+
+lets be clear all these functions work equal on ie6 or ie7 with or without tabs
+example lets say you have a google page open
+COM_Init()
+parentWindow:=IE7_Get("Google")
+IE7_Set_DOM(parentWindow,"q","Automation IE7 Navigation and Scripting with Tabs")
+IE7_Button_click(parentWindow,"Google Search")
+does that clear that up
+this works in ie 6 and 7 not just 7
+works in 7 with or without tabs
+Never lose.
+WIN or LEARN.
+
+tank
+Administrators
+4345 posts
+AutoHotkey Foundation
+ Last active: May 02 2019 09:16 PM
+Joined: 21 Dec 2007
+many times i see posts wehre people want to disect a page
+the following code has the following issues
+traversing frames. at this time the dom viewer will not give you anything more than the frame atributes i might get to adding that soon
+COM_Init()
+COM_Error(false)
+mouseover=
+(
+function whichElement()
+{
+   tname=event.srcElement.tagName;
+   tindex=event.srcElement.sourceIndex;
+   innerhtml=event.srcElement.innerHTML
+   oAttrColl = event.srcElement.attributes;
+   myLen=oAttrColl.length
+   xx="Dom=document.all(" + tindex + ")\n";
+   xx=xx + "document.all(" + tindex + ").tagName=" + event.srcElement.tagName + "\n";
+   for (i = 0; i < oAttrColl.length; i++)
+   {
+      oAttr = oAttrColl.item(i);
+      bSpecified = oAttr.specified;
+      sName = oAttr.nodeName;
+      vValue = oAttr.nodeValue;
+      if (bSpecified)
+      {
+         xx=xx + sName + "=" + vValue + "\n";
+      }
+   }
+   xx=xx + "document.all(" + tindex + ").value=" + event.srcElement.value + "\n";
+   
+}
+document.body.onmouseover = whichElement
+)
+
+Gui, Add, Button, x6 y0 w90 h20 gResume, Resume
+Gui, Add, Edit, x6 y20 w310 h315 vDom,
+
+Gui, Show, h335 w320, DOM Extractor Ctrl + / to freeze
+SetTimer,dom,800
+Return
+
+GuiClose:
+ExitApp
+Resume:
+SetTimer,dom,800
+Return
+dom:
+   WinGetTitle,thispage,ahk_class IEFrame
+   StringReplace,thispage,thispage,% " - Microsoft Internet Explorer",,All
+if thispage
+{
+   ControlGetText,URL,Edit1,% thispage . "ahk_class IEFrame"
+parentWindow:=IE7_Get(thispage)
+IE7_ExecuteJS(parentWindow, mouseover)
+tname:=IE7_ExecuteJS(parentWindow, "","tname")
+tindex:=IE7_ExecuteJS(parentWindow, "","tindex")
+myLen:=IE7_ExecuteJS(parentWindow, "","myLen")
+xx:=IE7_ExecuteJS(parentWindow, "","xx")
+innerhtml:=IE7_ExecuteJS(parentWindow, "","innerhtml")
+GuiControl,Text,Dom,% thispage . " `n" . URL . " `nDom accessable objects for document`.all collection `nElement type (" . tname . ")`nIndex (" . tindex . ")`nAttributes if any `n" . xx . "`nVisible text= " . innerhtml
+com_release(parentWindow)
+parentWindow=
+}
+return
+^/::
+SetTimer,dom,Off
+Returnof course you need com and the ie7 functions
+its pretty basic but on most pages it should give you detailed info about an html object and its atributes simply by rolling mouse over. including src of image
+#48 Automation IE7 Navigation and Scripting with Tabs: post #48 - Posted 02 August 2008 - 02:18 PM
+Never lose.
+WIN or LEARN.
+ Back to top
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+I have a question about IE7_executeJS:
+it has a third parameter "VarNames_to_Return" which isn't working out for me. As an example:
+lets say document.form1.wo1.value = 555 i would like to retrieve this value.
+i tried
+COM_Init()
+
+wh := IE7_Get("site.com")
+
+js := "var text=document.form1.wo1.value"
+IE7_ExecuteJS(wh, js, "text")
+MSgBox %text%but "text" returns as blank.
+
+What am i missing here?
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+Do you get anything when you type...
+javascript: var text=document.form1.wo1.value; alert(text);
+in IE?
+
+If your javascript code is correct, it should return the value. Problem is, when your javascript is incorrect, you don't get an error message.
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+Yes, inside JS it works fine, "text" has a value and i'm running IE7. Any ideas?
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+
+COM_Init()
+
+wh := IE7_Get("[color=red]<insert name of tab here - not site>[/color]")
+
+js := "var text=document.form1.wo1.value"
+IE7_ExecuteJS(wh, js, "text")
+MSgBox %text%
+
+here's an ugly but working example
+Com_Init()
+IE7_New("www.google.com")
+myPageHandle := IE7_Get("Google")
+sleep, 1000
+msgbox,,,myPageHandle: %myPageHandle%, 1
+x := IE7_ExecuteJS(myPageHandle, "var x=document.getElementById('gbar').childNodes[0].childNodes[4].innerText;", "x")
+y := IE7_ExecuteJS(myPageHandle, "var x=document.getElementById('gbar').childNodes[0].childNodes[6].innerText;", "x")
+z := IE7_ExecuteJS(myPageHandle, "var x=document.getElementById('gbar').childNodes[0].childNodes[8].innerText", "x")
+msgbox,,, retrieved:`n%x%`n%y%`n%z%`nfrom www.google.com
+let me know if this works
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+Yes, this is working, but i don't get why your example works and mine doesn't:
+COM_Init()
+wh := IE7_Get("Google")
+IE7_ExecuteJS(wh, "var x=document.f.q; x.value='this is a test'; var val=x.value; alert(val)", "val")
+MsgBOx %val%any ideas?
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+ok, i get it now i had to do it like this:
+
+val := IE7_ExecuteJS(wh, "var x=document.f.q; x.value='this is a test'; var val=x.value; alert(val)", "val")
+Thanks!
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+Yes, this is working, but i don't get why your example works and mine doesn't:
+
+COM_Init()
+wh := IE7_Get("Google")
+[color=red]val := [/color]IE7_ExecuteJS(wh, "var x=document.f.q; x.value='this is a test'; var val=x.value; alert(val)", "val")
+MsgBOx %val%
+
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+See you got it on your own. Nice...
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+CannedCheese, no, i got it thanks to your examples.
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+ok, i get it now i had to do it like this:
+
+
+val := IE7_ExecuteJS(wh, "var x=document.f.q; x.value='this is a test'; var val=x.value; alert(val)", "val")
+Thanks!
+
+Can you please post your working code for your example? I can't get
+IE7_ExecuteJS(wh, "var x=document.f.q; x.value='this is a test'; var val = x.value; alert(val)")
+to do anything, even though it works fine when I plug it in the browser. With IE7_ExecuteJS, I can't get the alert to pop or the form to be filled.
+
+neXt
+Members
+549 posts
+ Last active: May 20 2015 02:38 AM
+Joined: 18 Mar 2007
+Hmm strange, this works fine for me:
+SetTitleMatchMode 2
+COM_Init()
+
+IfWinNotExist Google
+{
+IE7_New("http://www.google.com/")
+WinWait Google
+}
+
+wh := IE7_Get("Google")
+IE7_ReadyState(wh)
+
+js = 
+(
+var x = document.f.q;
+x.value = 'this is a test';
+var val = x.value;
+alert('js popup: ' + val);
+)
+
+val := IE7_ExecuteJS(wh, js, "val")
+MsgBox ahk popup: %val%
+
+CannedCheese
+Members
+120 posts
+ Last active: Sep 24 2014 04:31 PM
+Joined: 21 May 2008
+Ok, this works for me, though I'll need to look into why my code wasn't working. For those messing around with this example, if you chose to use IfWinExist to look for a google browser window, I highly recommend at least changing
+IfWinExist Googleto
+IfWinExist Google - Windows Internet
+so that it isn't picking up incorrect windows like my GoogleTest.ahk or firefox google windows, etc. Probably better to use something like
+myPageHandle := IE7_Get("Google")
+if myPageHandle = 0
+IE7_New("www.google.com")
+...
+or something like that.
+« prevPage 4 of 15 2 3 4 5 6next »Back to Scripts and Functions
+Community Forum Software by IP.Board
+Licensed to: AutoHotkey Foundation LLCRSS Feed Change Theme English (USA) Privacy Policy Help
+
+
+
+IE7_ExecuteJS(handle, JsCode)
+
+JsCode = 
+(
+javascript goes here;
+break it in multiple lines;
+    tab it or whatever else you wanna do;
+    it will work and improve readability;
+)

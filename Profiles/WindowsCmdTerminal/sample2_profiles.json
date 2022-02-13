@@ -1,0 +1,55 @@
+{
+  "$schema": "https://aka.ms/terminal-profiles-schema",
+
+  "defaultProfile": "{7d04ce37-c00f-43ac-ba47-992cb1393216}",
+  "initialCols": 120,
+  "initialRows": 30,
+
+  "profiles": [
+    {
+      "acrylicOpacity": 0.85,
+      "closeOnExit": true,
+      "commandline": "c://Program Files//Yori//yori.exe",
+      "icon": "ms-appx:///ProfileIcons/{0caa0dad-35be-5f56-a8ff-afceeeaa6101}.png",
+      "cursorColor": "#00FF00",
+      "cursorHeight": 25,
+      "cursorShape": "vintage",
+      "fontFace": "Cascadia Code",
+      "fontSize": 14,
+      "guid": "{7d04ce37-c00f-43ac-ba47-992cb1393216}",
+      "historySize": 9001,
+      "name": "RetroWave",
+      "padding": "0, 0, 0, 0",
+      "snapOnInput": true,
+      "startingDirectory": "%USERPROFILE%/desktop",
+      "tabTitle": "RetroWave",
+      "useAcrylic": true,
+      "colorScheme": "Dracula",
+      "backgroundImage": "%USERPROFILE%/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/RoamingState/wp2324422.jpg",
+      "backgroundImageOpacity": 0.2
+    }
+  ],
+  "schemes": [
+    {
+      "name": "Dracula",
+      "background": "#272935",
+      "black": "#272935",
+      "blue": "#BD93F9",
+      "brightBlack": "#555555",
+      "brightBlue": "#BD93F9",
+      "brightCyan": "#8BE9FD",
+      "brightGreen": "#50FA7B",
+      "brightPurple": "#FF79C6",
+      "brightRed": "#FF5555",
+      "brightWhite": "#FFFFFF",
+      "brightYellow": "#F1FA8C",
+      "cyan": "#6272A4",
+      "foreground": "#F8F8F2",
+      "green": "#50FA7B",
+      "purple": "#6272A4",
+      "red": "#FF5555",
+      "white": "#F8F8F2",
+      "yellow": "#FFB86C"
+    }
+  ]
+}

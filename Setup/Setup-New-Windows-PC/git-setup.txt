@@ -1,0 +1,9 @@
+
+## This file contains the different commands to setup git on a windows machine
+
+# beyond compare
+# from https://www.scootersoftware.com/vbulletin/forum/beyond-compare-4-discussion/version-control-aa/13530-bc4-as-difftool-not-working-for-git-version-2-12-0-windows-1 
+git config --global diff.tool bc3
+git config --global difftool.bc3.path "c:/program files/beyond compare 4/bcomp.exe"
+git config --global merge.tool bc3
+git config --global mergetool.bc3.path "c:/program files/beyond compare 4/bcomp.exe"

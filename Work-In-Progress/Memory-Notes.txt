@@ -1,0 +1,76 @@
+
+##############
+Get Memory Scripts - Notes
+
+
+
+(get-counter -counter "\Memory\Available Bytes").CounterSamples[0].CookedValue + 
+(get-counter -counter "\Memory\Committed Bytes").CounterSamples[0].CookedValue
+
+
+(get-wmiobject -class "win32_physicalmemory" -namespace "root\CIMV2").Capacity
+
+
+
+WMI can be use
+
+(systeminfo | Select-String 'Total Physical Memory:').ToString().Split(':')[1].Trim()
+
+
+get-ciminstance -class "cim_physicalmemory" | % {$_.Capacity}
+
+Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum | Foreach {"{0:N2}" -f ([math]::round(($_.Sum / 1GB),2))}
+
+
+  $totalmemory = Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum | Foreach {"{0:N2}" -f ([math]::round(($_.Sum / 1GB),2))}
+   $totalmemory
+
+   (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum /1gb
+
+   $cs = get-wmiobject -class "Win32_ComputerSystem"
+$Mem = [math]::Ceiling($cs.TotalPhysicalMemory / 1024 / 1024 / 1024)
+
+(Get-WmiObject -class "cim_physicalmemory" | Measure-Object -Property Capacity -Sum).Sum
+
+
+$bytes = (Get-WmiObject -class "cim_physicalmemory" | Measure-Object -Property Capacity -Sum).Sum
+
+$kb = $bytes / 1024
+$mb = $bytes / 1024 / 1024
+$gb = $bytes / 1024 / 1024 / 1024
+
+
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.VisualBasic")
+$VBObject=[Microsoft.VisualBasic.Devices.ComputerInfo]::new()
+$SystemMemory=$VBObject.TotalPhysicalMemory
+
+
+gwmi Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | % {[Math]::Round($_.sum/1024/1024)} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://psmsgraph.readthedocs.io/en/latest/#quickstart
+
+
+
+
+
+
+
+
+
+Release Notes
+https://github.com/markekraus/PSMSGraph/blob/master/RELEASE.md
+
+ChangeLog
+https://github.com/markekraus/PSMSGraph/blob/master/docs/ChangeLog.md

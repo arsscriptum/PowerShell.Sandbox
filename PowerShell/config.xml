@@ -1,0 +1,11 @@
+<config>
+	<apiKey>5a89f379e27f141deaed9304a994ed56a692e9f5</apiKey>
+	<rmUrl>http://bcadlx01/redmine/projects/knee</rmUrl>
+	<rmAssign>64</rmAssign>
+	<rmProject>1</rmProject>
+	<rmId>
+		<open></open>
+		<start></start>
+		<close></close>
+	</rmId>
+</config>

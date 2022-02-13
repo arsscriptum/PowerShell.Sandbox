@@ -1,0 +1,40 @@
+► Title - 
+	It was not possible to load the notification area icon.
+▬ Message - 
+	The operation completed successfully
+○ Type - 
+	System.ComponentModel.Win32Exception
+♦ [Version] Date/Hour - 
+	[2.26.1] 06/20/2021 14:36:23
+▲ Source - 
+	System.Drawing
+▼ TargetSite - 
+	Void Initialize(Int32, Int32)
+◄ Aditional - 
+	StreamInfo is null? False, Native error code: 0
+♠ StackTrace - 
+   à System.Drawing.Icon.Initialize(Int32 width, Int32 height)
+   à ScreenToGif.ImageUtil.ImageMethods.ToIcon(ImageSource imageSource)
+
+----------------------------------
+
+► Title - 
+	It was not possible to load the notification area icon.
+▬ Message - 
+	The operation completed successfully
+○ Type - 
+	System.ComponentModel.Win32Exception
+♦ [Version] Date/Hour - 
+	[2.32] 06/20/2021 14:36:49
+▲ Source - 
+	System.Drawing
+▼ TargetSite - 
+	Void Initialize(Int32, Int32)
+◄ Aditional - 
+	StreamInfo is null? False, Native error code: 0
+♠ StackTrace - 
+   à System.Drawing.Icon.Initialize(Int32 width, Int32 height)
+   à ScreenToGif.ImageUtil.ImageMethods.ToIcon(ImageSource imageSource)
+
+----------------------------------
+

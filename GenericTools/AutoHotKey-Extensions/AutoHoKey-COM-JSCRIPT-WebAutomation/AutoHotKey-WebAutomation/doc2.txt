@@ -1,0 +1,509 @@
+
+
+;;; =================================================================================
+
+likely am mssing something basic, but with
+objWord = com_CreateObject("Word.Application")
+am unable to see my way to:
+
+objWord.Documents.Open("FILE")
+or
+
+objWord.WordBasic
+
+com_Invoke(objWord, "Documents")
+
+also brought no joy...
+
+
+
+suggestions ?
+Joyce Jamce
+
+Lexikos
+Administrators
+9844 posts
+AutoHotkey Foundation
+ Last active:
+Joined: 17 Oct 2006
+likely am mssing something basic, but with
+
+objWord [color=red]=[/color] com_CreateObject("Word.Application")
+Make sure you used ":=" and not "=" in your actual code. Also, I don't have Word installed, but...
+objWord.Documents.Open("FILE")...should translate to...
+Documents := COM_Invoke(objWord, "Documents")
+COM_Invoke(Documents, "Open", "FILE")
+COM_Release(Documents)
+
+Joy2DWorld
+Members
+562 posts
+ Last active: Jun 30 2014 07:48 PM
+Joined: 04 Dec 2006
+sorry,
+
+code was figurative, not literal..
+
+com_CoInitialize()
+objWord  := com_CreateObject("Word.Application")
+msgbox  % objword
+msgbox % invoke(objWord,"Documents")
+also tried variants of (objword, "Documents=", "Open)
+
+
+;;; =================================================================================
+
+A new function is added, COM_ScriptControl(sCode, sLanguage = "", bEval = False), which executes external VBScript/JScript/etc.
+
+Example:
+Code=
+(
+  sh=new ActiveXObject("WScript.Shell");
+  sh.Popup('Hello, world!', 2);
+)
+
+COM_ScriptControl(Code, "JScript")
+
+;;; =================================================================================
+
+I reuploaded COM.ahk as there was an obvious bug with new functions
+COM_Init(bOLE = False) / COM_Term(bOLE = False)which are wrappers around
+COM_CoInitialize()  / COM_CoUninitialize()  ; bOLE = False
+COM_OleInitialize() / COM_OleUninitialize() ; bOLE = True
+
+;;; =================================================================================
+
+@Chris,
+
+The advancement that Sean has made to AHK is almost beyond comprehension.
+
+
+How to put this... for example, using a simple command " Invoke() ",
+
+you can now, with AHK, directly control *any* part of any webpage being displayed in IExplorer on your machine.
+
+as for windows scripting,
+
+;;; =================================================================================
+
+psc := ActiveXObject("MSScriptControl.ScriptControl")    ; Handle to script control instance  
+Invoke(psc, "Language=", "JScript")           ; sent langauge to Java for this instance
+msgbox  % wow := Invoke(psc, "Eval", "sh=new ActiveXObject(""WScript.Shell"");`nsh.Popup('Hello, world!', 2); sh ")          ; invokes EVAL for the javascript sh=...  which sets an active X object inside java to create the popup  
+          
+invoke(wow, "Popup","Sean, this is really, really cool!!!!")     ;      the same thing,  using the same handle,  directly for AHK! 
+          
+Release(psc)           
+CoUninitialize()
+
+
+;;; =================================================================================
+
+
+@Chris,
+
+The advancement that Sean has made to AHK is almost beyond comprehension.
+
+
+How to put this... for example, using a simple command " Invoke() ",
+
+you can now, with AHK, directly control *any* part of any webpage being displayed in IExplorer on your machine.
+
+as for windows scripting,
+
+psc := ActiveXObject("MSScriptControl.ScriptControl")    ; Handle to script control instance  
+Invoke(psc, "Language=", "JScript")           ; sent langauge to Java for this instance
+msgbox  % wow := Invoke(psc, "Eval", "sh=new ActiveXObject(""WScript.Shell"");`nsh.Popup('Hello, world!', 2); sh ")          ; invokes EVAL for the javascript sh=...  which sets an active X object inside java to create the popup  
+          
+invoke(wow, "Popup","Sean, this is really, really cool!!!!")     ;      the same thing,  using the same handle,  directly for AHK! 
+          
+Release(psc)           
+CoUninitialize()
+
+or more simply ?
+
+CoInitialize()           
+wow := ActiveXObject("WScript.Shell")           
+invoke(wow, "Popup","Hello world!",2)             
+Release(wow)           
+CoUninitialize()
+
+but then again,
+
+what do i know...
+
+edit: it looks to complex so, retry:
+
+psc := ActiveXObject("MSScriptControl.ScriptControl")  
+Invoke(psc, "Language=", "JScript") 
+
+JavaCode := "x = 'WOW' ; x" ; whatever and as much java code you want !!
+
+result := Invoke(psc, "Eval", JavaCode)
+
+
+Release(psc)            
+CoUninitialize()
+which my AHK errors on on the JavaCode := line (????)
+
+so last try:
+
+
+com_CoInitialize()          
+psc := com_ActiveXObject("MSScriptControl.ScriptControl")          
+com_Invoke(psc, "Language=", "JScript")          
+          
+JavaCode =          
+(          
+x = "Wow"  ;          
+x          
+) ; whatever and as much java code you want !!          
+          
+result := com_Invoke(psc, "Eval", JavaCode)          
+          
+          
+com_Release(psc)          
+com_CoUninitialize()          
+msgbox % result
+
+
+
+
+
+
+
+
+
+
+So, problem was solved or not? If not, I guess what you want is this:
+COM_Init()
+objWord  := COM_CreateObject("Word.Application")
+COM_Invoke(objWord, "Visible=", "True")
+COM_Invoke(COM_Invoke(objWord, "Documents"), "Open", "C:\test.doc")
+
+ahklerner
+Members
+1386 posts
+ Last active: Oct 08 2014 10:29 AM
+Joined: 26 Jun 2006
+Tested:
+com_CoInitialize()
+objWord  := com_CreateObject("Word.Application")
+com_invoke(objWord,"Visible=",True)
+Docs := com_invoke(objWord,"Documents")
+com_invoke(Docs,"Open","c:\blah.doc")
+Posted Image
+ʞɔпɟ əɥʇ ʇɐɥʍ
+
+ahklerner
+Members
+1386 posts
+ Last active: Oct 08 2014 10:29 AM
+Joined: 26 Jun 2006
+Sean beat me.
+Posted Image
+ʞɔпɟ əɥʇ ʇɐɥʍ
+
+Joy2DWorld
+Members
+562 posts
+ Last active: Jun 30 2014 07:48 PM
+Joined: 04 Dec 2006
+ok,
+
+1. THANKS!! for all the guidance....
+
+2. Can nominate me for month's bonehead coding award...
+
+
+Invoke(pdisp, sName, arg1="vT_NoNe",arg2="vT_NoNe",arg3="vT_NoNe",arg4="vT_NoNe",
+arg5="vT_NoNe",arg6="vT_NoNe",arg7="vT_NoNe",arg8="vT_NoNe",
+arg9="vT_NoNe") {
+
+Com_Invoke(pdisp, sName, arg1 ,arg2 ,arg3,arg4,arg5,arg6,arg7,arg8,arg9)
+}
+
+
+
+was the bonehead source of all my woes.....
+
+
+ie... not very effective way to get back invoke handle!!
+Joyce Jamce
+
+Lexikos
+Administrators
+9844 posts
+AutoHotkey Foundation
+ Last active:
+Joined: 17 Oct 2006
+I'd like to suggest a change to COM_QueryService:
+
+Do not reuse ppv (the function parameter) as an output variable in the DllCall.
+
+If IServiceProvider.QueryService fails for whatever reason, currently COM_QueryService returns whatever pointer it was given. Using a "dedicated" variable would automatically mean COM_QueryService would return 0 on failure.
+
+
+@Joy2DWorld: would you mind editing that quote (adding spaces) so it doesn't stretch the page?
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+If IServiceProvider.QueryService fails for whatever reason, currently COM_QueryService returns whatever pointer it was given.
+
+It's updated. There have been other cosmetic modifications too.
+
+Have you ever experienced the same problem with QueryInterface? I had expected the same behavior with QueryService. BTW, strangely, I found that it was already modified in my custom version, but not in COM.ahk.
+
+Joy2DWorld
+Members
+562 posts
+ Last active: Jun 30 2014 07:48 PM
+Joined: 04 Dec 2006
+@Joy2DWorld: would you mind editing that quote (adding spaces) so it doesn't stretch the page?
+
+
+
+done,
+
+try this java scriptlet...
+
+<script language=javascript>
+var imgAR,imgNm,txtWrap,ocWidth,isFixed;
+if(imgAR==undefined) imgAR=new Array();
+if(imgNm==undefined) imgNm=0;
+if(!isFixed){
+	fixPage();
+	isFixed=1;
+}
+else{
+	restoreImage();
+	isFixed=0;
+}
+if(alphaB=='1'){
+	attachEvent('onbeforeprint',function(){for(i=0; i<=imgNm-1; i++) removeAlpha(imgAR[i])});
+	attachEvent('onafterprint',function(){for(i=0; i<=imgNm-1; i++) restoreAlpha(imgAR[i])});
+	attachEvent('onunload',removeEvtHandler);
+}
+attachEvent('onresize',function(){setTimeout('if(bodyWidth()!=ocWidth&&isFixed) fixPage()',0)});
+function fixPage(){
+	scrollBy(1000,0);
+	exWidth=document.body.scrollLeft?document.body.scrollLeft:document.documentElement.scrollLeft;
+	if(exWidth>0){
+		scrollBy(-1000,0);
+		threshold=0.75*bodyWidth();
+		for(i=0; i<=document.images.length-1; i++){
+			var img=document.images[i];
+			var obj=img.parentElement.tagName!='A'?img:img.parentElement;
+			img.osWidth=obj.parentElement.offsetWidth-obj.offsetWidth;
+			if(img.osWidth<0||obj.parentElement.tagName=='BODY') img.osWidth=20;
+			if(img.width>threshold||img.width>600){
+				if(!img.oWidth){
+					img.oWidth=img.width;
+					img.oHeight=img.height;
+					if(!img.currentStyle.filter){
+						img.width=img.oWidth;
+						img.height=img.oHeight;
+						if(alphaB=='1'){
+							img.oSrc=img.src;
+							img.src=imgSrc;
+							img.style.filter='progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\''+img.oSrc+'\',sizingMethod=\'scale\')';
+							img.ondragstart=function(){removeAlpha(event.srcElement)};
+							img.oncontextmenu=function(){removeAlpha(event.srcElement)};
+							img.onmouseout=function(){restoreAlpha(event.srcElement)};
+						}
+					}
+					imgAR[imgNm]=img;
+					imgNm++;
+				}
+				if(img.width>exWidth+20) img.width=img.width-exWidth-20;
+				else img.width=50;
+			}
+		}
+		if(!txtWrap){
+			wrapText(document.body);
+			txtWrap=1;
+		}
+	}
+	resizeImage();
+	ocWidth=bodyWidth();
+}
+function wrapText(obj){
+	if(obj.nodeType==3){
+		bPos=obj.data.search(/\S{35}/);
+		if(bPos>=0){
+			nObj=obj.splitText(bPos+35);
+			obj.parentNode.insertBefore(document.createElement('WBR'),nObj);
+		}
+	}
+	else if(obj.tagName!='STYLE'&&obj.tagName!='SCRIPT'){
+		for(var j=0; cobj=obj.childNodes[j]; j++) wrapText(cobj);
+	}
+}
+function resizeImage(){
+	for(i=0; i<=imgNm-1; i++){
+		var y=imgAR[i].parentElement.tagName!='A'?imgAR[i]:imgAR[i].parentElement;
+		var z=y.parentElement;
+		newWidth=(z.clientWidth?z.clientWidth:z.offsetWidth)-imgAR[i].osWidth;
+		if(newWidth==imgAR[i].width&&ocWidth!=undefined&&bodyWidth()>ocWidth) newWidth=imgAR[i].width+bodyWidth()-ocWidth;
+		if(newWidth>imgAR[i].oWidth) newWidth=imgAR[i].oWidth;
+		imgAR[i].width=newWidth;
+		imgAR[i].height=imgAR[i].oHeight*newWidth/imgAR[i].oWidth;
+	}
+}
+function restoreImage(){
+	for(i=0; i<=imgNm-1; i++){
+		imgAR[i].width=imgAR[i].oWidth;
+		imgAR[i].height=imgAR[i].oHeight;
+	}
+}
+function removeAlpha(x){
+	if(x.src.indexOf('FixWidePage.gif')!=-1){
+		x.src=x.oSrc;
+		x.oSrc=imgSrc;
+	}
+}
+function restoreAlpha(x){
+	if(x.style.filter.indexOf(x.src)!=-1){
+		x.oSrc=x.src;
+		x.src=imgSrc;
+	}
+}
+function removeEvtHandler(){
+	for(i=0; i<=imgNm-1; i++){
+		imgAR[i].oncontextmenu='';
+		imgAR[i].ondragstart='';
+		imgAR[i].onmouseout='';
+	}
+}
+function bodyWidth(){
+	return(document.body.clientWidth?document.body.clientWidth:document.documentElement.clientWidth)
+}
+</script>
+Joyce Jamce
+
+Lexikos
+Administrators
+9844 posts
+AutoHotkey Foundation
+ Last active:
+Joined: 17 Oct 2006
+It's updated.
+
+Thanks.
+Have you ever experienced the same problem with QueryInterface?
+
+No. I guess I've never queried for an interface that wasn't present, or more likely, QueryInterface set a default value for the output parameter. I suppose it's really up to the programmer of the interface.
+
+I only noticed it with QueryService because it fails for Internet Explorer (from the accessible object) if no page has loaded yet. I was getting back a pointer to the accessible object rather than a window object (or null), so AutoHotkey would crash as soon as I tried to Invoke.
+done,
+
+Thanks.
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+I guess I've never queried for an interface that wasn't present, or more likely, QueryInterface set a default value for the output parameter. I suppose it's really up to the programmer of the interface.
+
+It should be in QueryInterface case as it's documented, although NULL doesn't necessarily mean zero:
+If the object does not support the interface specified in iid, *ppvObject is set to NULL.
+
+I didn't expect all authors would follow the documentation strictly, however, I haven't faced an exception to returning zero as far as I can recall.
+
+Lexikos
+Administrators
+9844 posts
+AutoHotkey Foundation
+ Last active:
+Joined: 17 Oct 2006
+Any idea why SetFormat, Integer, H breaks Invoke?
+COM_Init()
+doc := COM_CreateObject("{25336920-03F9-11CF-8FD0-00AA00686F13}")
+COM_Invoke(doc, "write", "test")
+
+body_D := COM_Invoke(doc, "body")
+SetFormat, Integer, H ; (I originally set the format for something unrelated)
+body_H := COM_Invoke(doc, "body")
+
+MsgBox % "D:" body_D ", H:" body_H
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+Any idea why SetFormat, Integer, H breaks Invoke?
+
+I believe it's because of
+arg%A_Index%
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+arg%A_Index%
+I was in a hurry at the time. Do you want me to modify COM.ahk, or Chris to change the current behavior of A_Index?
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+COM_Invoke()/COM_Invoke_() are updated to not depend on the format of integer. And, the argument's indices are changed from 1-based to 0-based. I hope that _TEMP_VT_BYREF_ haven't been used much.
+
+Sean
+Members
+2462 posts
+ Last active: Feb 07 2012 04:00 AM
+Joined: 12 Feb 2007
+Added missing nParams := 10 to COM_Invoke()/COM_Invoke_().
+
+nnesori
+Members
+16 posts
+ Last active: Jul 23 2009 05:03 PM
+Joined: 14 Oct 2006
+GOM is a FREE media player with popular audio & video codecs built-in.
+( <!-- m -->http://www.gomplayer.com/main.html<!-- m -->)
+and GOMX is ActiveX Lib.
+
+I tried below script.
+PROPERTYGET works well.
+but PROPERTYPUT doesn't work.
+
+Can someone help me, please.
+Posted Image
+
+COM_AtlAxWinInit()
+Gui, +LastFound 
+Gui, Show , W500 H350 ,MyGomPlayer
+hwnd:=WinExist("MyGomPlayer")
+pdsp:=Gom_Add(hWnd, 0, 0, 500, 350)
+
+
+if(pdsp=""){ 
+  msgbox, Error. ( GOMX not found!  )
+  Exit 
+} 
+ msgbox % "ver=" . COM_Invoke(pdsp,"Version") 
+ COM_Invoke(pdsp,"Url=","d:\sumo07.avi")    ;<-----_hResult_= -2147352569 (DISP_E_NONAMEDARGS)
+
+ msgbox % COM_Invoke(pdsp,"Url")
+ COM_Invoke(pdsp,"Play") 
+Return
+
+GuiClose:
+ Gui,Destroy
+ COM_Release(pdsp)
+ COM_AtlAxWinTerm()
+ ExitApp
+return
+
+Gom_Add(hWnd, x, y, w, h)
+{  
+  Return, COM_AtlAxGetControl(COM_AtlAxCreateContainer(hWnd, x, y, w, h, "GOMX.GomXCtrl.1"))
+}

@@ -1,0 +1,1 @@
+cmd /c ""C:\Programs\Git\bin\bash.exe" --login -i -- /c/Users/radic/Scripts/ftail.sh"

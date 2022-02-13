@@ -1,0 +1,177 @@
+-----------------------------------------------------------------------------------------------------
+#!/bin/bash
+set -o errexit
+set -o pipefail
+set -o nounset
+set -o xtrace
+# set -eox pipefail #safety for script
+------------------------------------------------------------------------------------------
+shell script
+$0 represent the shell script file name itself
+$1 Starting with $1, are actual command line arguments sent to the shell script.
+------------------------------------------------------------------------------------------
+ clear your bash history
+>~/.bash_history
+Another option is link ~/.bash_history to /dev/null
+ln -sf /dev/null ~/.bash_history
+
+set +o history #stop logging bash history
+set -o history #start logging
+# put a space before command
+
+# start the command with a space
+# not be recorded in history
+# up/down arrow keys will not show history
+
+set -eux #safety for script
+set -o pipefail: returns error from pipe `|` if any of the commands in the pipe fail (normally just returns an error if the last fails)
+set -o errexit (set -e): exit script when command fails
+set -o nounset (set -u): exit script when it tries to use undeclared variables
+
+set -u #The shell shall write a message to standard error when it tries to expand a variable that  is  not
+       set and immediately exit.
+set +x #Use the plus sign(+) before any of the flags to disable
+set -x #enables a mode of the shell where all executed commands are printed to the terminal,used for debugging printing every command
+set -e #stop a script immediately when something goes wrong.When you're debugging a script, you probably don't want a partially functional script to keep on running, causing havoc or producing incorrect results
+set -f #disable automatic file name generation,Globbing can be useful in finding files
+set -C #disable Bash's default behavior of overwriting files,configures Bash to not overwrite an existing file when output redirection using >, >&, and <> is redirected to a file
+
+bash -e myScript
+-------------------------------------------------------------------------------------------------------------------------------------------------
+# remote public github content run
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#-c string If  the  -c  option  is  present, then commands are read from string.
+#If there are arguments after the  string,  they  are assigned to the positional parameters, starting with $0.
+
+/bin/sh -c 'curl -L https://istio.io/downloadIstio | sh -' #single quotes
+/bin/sh -eu -xv -c 'cmd1 | cmd2' #debug.
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#!/bin/sh
+
+# bash lvm-create-vol.sh 3 1
+# pvdisplay --- Physical volume ---
+# vgdisplay --- Volume group ---
+# lvdisplay --- Logical volume ---
+VOL_GROUP="vgvagrant"  #Defines the volume group to create volumes on
+if [ $1 ];
+then
+    VOLUMES=$1;
+else
+    echo "Number of volumes ";
+    exit;
+fi
+
+if [ $2 ];
+then
+    SIZE=$2;
+else
+    echo "Size of volumes in (GB)";
+    exit;
+fi
+
+VOL=0
+while [ $VOL -lt $VOLUMES ];
+do
+    #create volumes
+    lvcreate -L $SIZE -n vol$VOL $VOL_GROUP;
+    VOL=$(( $VOL  1 ));
+done
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#Syntax for Command Substitution
+#The old-style uses backticks (also called backquotes) to wrap the command being substituted
+#The new style begins with a dollar sign and wraps the rest of the command in parenthesis
+
+#using the output of one command as an argument to another command
+$ today=$(date +%d-%b-%Y) && echo $today
+$ echo "Today is $(date +%d-%b-%Y)"
+#The inner command, rpm -qa | grep httpd, lists all the packages that have httpd in the name
+#The outer command, rpm -ql, lists all the files in each package
+$ rpm -ql $(rpm -qa | grep httpd)
+-------------------------------------------------------------------------------------------------------------------------------------------------
+# not a separate external command, but rather a shell built-in
+#takes a string as its argument, and evaluates it as if it s typed on a command line
+$ COMMAND="ls -lrt"
+vagrant@vagrant:~$ eval $COMMAND
+
+#This command can be used in any script also where the variable name is unknown until executing the script. 
+#In bash, however, this can be accomplished with variable indirection using the syntax
+${!varname}
+
+$ cat tryeval.sh
+#!/bin/bash
+#Initialize the variable x and y
+x=5
+y=15
+
+#The first command variable is used to assign `expr` command to add the values of $x and $y
+c1="`expr $x + $y`"
+
+#The second command variable is used to assign `echo` command
+c2="echo"
+
+#`eval` will calculate and print the sum of $x and $y by executing the commands of $c1 and $c2 variables
+eval $c2 $c1
+$ bash tryeval.sh
+20
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#from windows to linux copy problem fix
+$ make
+Makefile:21: *** missing separator.  Stop.
+$ perl -pi -e 's/^  */\t/' Makefile
+-------------------------------------------------------------------------------------------------------------------------------------------------
+#Makefile gnu fortran
+F90 = gfortran
+TARGET=ff
+OBJECTS = $(TARGET).o
+FCFLAGS = -Ofast -g -pg -fbounds-check
+
+#all: clean run
+
+#compile
+$(TARGET): $(OBJECTS)
+	$(F90) $(FCFLAGS) -o $(TARGET) $(OBJECTS)
+%.o: %.f90
+	$(F90) $(FCFLAGS) -c $^
+run:
+	./$(TARGET)
+	gprof $(TARGET) gmon.out > ff_analysis.txt
+
+.PHONY:clean
+
+clean:
+	rm -rf $(TARGET) $(OBJECTS) *.out *.o
+-------------------------------------------------------------------------------------------------------------------------------------------------
+# The double-bracket syntax serves as an enhanced version of the single-bracket syntax
+# the double-bracket syntax features shell globbing.if $stringvar contains the phrase “string” anywhere, the condition will return true. 
+if [[ "$stringvar" == *string* ]]; then
+#match both “String” and “string”, use the following syntax
+#only general shell globbing is allowed. Bash-specific things like {1..4} or {foo,bar} does not work. 
+if [[ "$stringvar" == *[sS]tring* ]]; then
+#The second difference is that word splitting is prevented. omit placing quotes around string variables
+if [[ $stringvarwithspaces != foo ]]; then
+
+#without the double-bracket syntax
+if [ -a *.sh ]; then 
+#return true if there is one single file in the working directory that has a .sh extension.
+return false,If there are none
+hrow an error and stop executing the script,If there are several .sh files,because *.sh is expanded to the files in the working directory
+#with the double-bracket syntax
+if [[ -a *.sh ]]; then
+#return true if there is a file in the working directory called “*.sh
+
+#the double-bracket syntax allows regex pattern matching using the “=~” operator.
+#the and operator has precedence over the or operator, meaning that “&&” or “-a” will be evaluated before “||” or “-o”.
+#returns true if $num is equal to 3 and $stringvar is equal to “foo”.
+if [[ $num -eq 3 && "$stringvar" == foo ]]; then
+
+#Double-parenthesis syntax
+#true if $num is less than or equal to 5.
+if (( $num <= 5 )); then
+-------------------------------------------------------------------------------------------------------------------------------------------------
+for i in {0..10}; do echo $i; done
+for i in `seq 0 2 10`; do echo $i; done
+-------------------------------------------------------------------------------------------------------------------------------------------------

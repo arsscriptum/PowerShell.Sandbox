@@ -1,0 +1,6 @@
+#include <windows.h>
+100 ICON "res/main_icon.ico"
+
+#ifndef NO_DEFAULT_MANIFEST
+    CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "res/modern_style.manifest"
+#endif

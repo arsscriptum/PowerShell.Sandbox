@@ -1,0 +1,58 @@
+# Prerequisites
+*.d
+*.aps
+*.db
+*.opendb
+.vs/
+.vs/**
+
+bin/
+bin/**
+
+obj/
+obj/**
+
+ipch/
+ipch/**
+
+tools/bin
+tools/bin/**
+GenericTools/AutoHotKey-Extensions/AutoHoKey-COM-JSCRIPT-WebAutomation/doc/**
+GenericTools2/AutoHotKey-Extensions/AutoHoKey-COM-JSCRIPT-WebAutomation/doc/**
+evotec/
+evotec/**
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.vcxproj.user
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Executables
+*.out
+*.app
+
+tmp*.bat
+__*.bat
+
+scripts\tmp*.bat
+scripts\__*.bat
