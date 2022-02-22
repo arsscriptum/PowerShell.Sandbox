@@ -11,6 +11,16 @@ param (
       [switch]$Uninstall
     )
 
+
+$Script:ModLogScript = (Resolve-Path "$PSScriptRoot\modlog.ps1").Path
+$Script:DllExpExe = (Resolve-Path "..\bin\dllexp.exe").Path
+$Script:DllRegistryPath = 'HKCR:\dllfile\shell\dllexp'
+$Script:DllRegistryPathCmd = "$Script:DllRegistryPath\command"
+Write-Host -f DarkYellow "IMPORTING $Script:ModLogScript"
+. "$Script:ModLogScript"
+
+(Resolve-Path "..\bin\dllexp.exe").Path
+
 function Uninstall-ContextualMenu
 {
     [CmdletBinding(SupportsShouldProcess)]
@@ -20,8 +30,8 @@ function Uninstall-ContextualMenu
         New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR
               
         Write-Host "Cleaning up..."
-        $RegistryPath = 'HKCR:\dllfile\shell\dllexp'
-        $null=Remove-Item -Path $RegistryPath -Recurse -Force -EA Ignore | Out-Null
+       
+        $null=Remove-Item -Path $Script:DllRegistryPath -Recurse -Force -EA Ignore | Out-Null
 
         Remove-PSDrive -Name HKCR
     catch {
@@ -42,9 +52,7 @@ function Install-ContextualMenu{
         Write-ChannelMessage  "====================================="
         Write-ChannelMessage  "ContextualMenu Config"
         Write-ChannelMessage  "====================================="
-        
-        $RegistryPathDllexp = "HKCR:\dllfile\shell\dllexp"
-        $RegistryPathCmd = "$RegistryPathDllexp\command"
+
         $RootPath = (Resolve-Path "$PSScriptRoot\..").Path
         $BinPath = Join-Path $RootPath 'bin'
         $ImgPath = Join-Path $RootPath 'img'
@@ -66,7 +74,7 @@ function Install-ContextualMenu{
         }
         $Cmd = '"' + $Program + '"'
         $Cmd += ' "%1"'
-        New-Item $RegistryPathCmd -Force -Value "$Cmd"
+        New-Item $Script:DllRegistryPathCmd -Force -Value "$Cmd"
         Write-ChannelMessage  "Cmd $$Cmd"
 
         if(-not(Test-Path $IconPath)){
@@ -78,8 +86,8 @@ function Install-ContextualMenu{
             Write-ChannelMessage  "IconPath $IconPath UDPATE"
         }
         
-        New-ItemProperty $RegistryPathDllexp -Name 'Icon' -Value  "$IconPath" | Out-Null
-        New-ItemProperty $RegistryPathDllexp -Name 'MUIVerb' -Value 'Load Dll Export' | Out-Null
+        New-ItemProperty $Script:DllRegistryPathDll -Name 'Icon' -Value  "$IconPath" | Out-Null
+        New-ItemProperty $Script:DllRegistryPathDll -Name 'MUIVerb' -Value 'Load Dll Export' | Out-Null
         Remove-PSDrive -Name HKCR
     } catch {
         Write-Error $_
@@ -146,7 +154,8 @@ if($Uninstall){
     return
 }
 Write-Host "Starting configuration" -f DarkYellow
-Install-ContextualMenu 'C:\Programs\SystemTools\dllexp.exe' 'dll2.ico'
+Install-ContextualMenu "$Script:DllExpExe" 'dll2.ico'
 Write-Host "Install Completed, exiting." -f DarkYellow
 
 
+Read-Host 'Done. Press a key'
