@@ -1,4 +1,4 @@
-﻿function Test-PGP {
+﻿function Test-PGP{
     [cmdletBinding(DefaultParameterSetName = 'File')]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Folder')]
