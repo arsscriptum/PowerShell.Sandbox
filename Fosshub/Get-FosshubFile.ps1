@@ -10,6 +10,7 @@
 #̷𝓍   https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/Fosshub/Get-FosshubFile.ps1
 #̷𝓍   
 #̷𝓍   <guillaumeplante.qc@gmail.com>
+#̷𝓍   https://arsscriptum.github.io/
 #̷𝓍   
 #̷𝓍   Run it ./Get-FosshubFile.ps1
 #̷𝓍   will download both the app and the plugins.
