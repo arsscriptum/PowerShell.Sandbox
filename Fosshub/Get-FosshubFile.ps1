@@ -1,7 +1,8 @@
 <#
 #̷𝓍   𝓐𝓡𝓢 𝓢𝓒𝓡𝓘𝓟𝓣𝓤𝓜 
 #̷𝓍   
-#̷𝓍   Download files from fosshub website
+#̷𝓍   Download files from fosshub website, using a script. Can be used to automate Downloading app and plugins.
+#̷𝓍   
 #̷𝓍   I wrote this to help this dude on Reddit:
 #̷𝓍   https://www.reddit.com/r/PowerShell/comments/u3ge6a/download_files_from_fosshub_website
 #̷𝓍   
