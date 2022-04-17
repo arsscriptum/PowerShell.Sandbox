@@ -1,9 +1,35 @@
 <#
 #̷𝓍   𝓐𝓡𝓢 𝓢𝓒𝓡𝓘𝓟𝓣𝓤𝓜 
-#̷𝓍   Download files from fosshub website
 #̷𝓍   
+#̷𝓍   Download files from fosshub website
+#̷𝓍   I wrote this to help this dude on Reddit:
+#̷𝓍   https://www.reddit.com/r/PowerShell/comments/u3ge6a/download_files_from_fosshub_website
+#̷𝓍   
+#̷𝓍   Get it here:
+#̷𝓍   https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/Fosshub/Get-FosshubFile.ps1
+#̷𝓍   
+#̷𝓍   <guillaumeplante.qc@gmail.com>
+#̷𝓍   
+#̷𝓍   Run it ./Get-FosshubFile.ps1
+#̷𝓍   will download both the app and the plugins.
 #>
 
+[CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$false)]
+        [switch]$Overwrite
+    )  
+
+function writemsg{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true,Position=0)]
+        [string]$Message
+    ) 
+
+    Write-Host -n -f Blue "[Fosshub] "
+    Write-Host -f White "$Message"
+}
 
 function Get-DownloadUrl{
     [CmdletBinding(SupportsShouldProcess)]
@@ -52,7 +78,7 @@ function Invoke-DownloadFile{
     param(
         [Parameter(Mandatory=$True, Position=0)]
         [string]$DestinationPath,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, Position=1)]
         [string]$FileName = 'iview460_plugins_x64_setup.exe'      
     ) 
   try{
@@ -116,5 +142,40 @@ function Invoke-DownloadFile{
     Write-verbose "Downloaded $Url"
   }
 
-  return $true
+  return
 }
+
+
+
+$DownloadPath = "$PSScriptRoot\Download"
+
+if($Overwrite){
+    writemsg "-Overwrite: clean $DownloadPath"
+    $Null = Remove-Item -Path $DownloadPath -Recurse -Force -ErrorAction Ignore
+}
+
+if(Test-Path -Path $DownloadPath){
+    $Files = (gci -Path $DownloadPath)
+    $FilesCount = $Files.Count
+    if($FilesCount -gt 0){
+        Write-Error "Directory $DownloadPath already exists, and NOT empty. (delete, or use -Overwrite)"
+        return    
+    }
+}
+
+writemsg "Create Directory $DownloadPath"
+$Null = New-Item -Path $DownloadPath -ItemType "Directory" -Force -ErrorAction Ignore
+
+# ------------------------------
+# iview460_x64 APP
+$Filename = 'iview460_x64_setup.exe' 
+writemsg "Download $Filename"
+$DestinationPath = Join-Path $DownloadPath $Filename
+Invoke-DownloadFile $DestinationPath $Filename
+
+# ------------------------------
+# PLUGINS
+$Filename = 'iview460_plugins_x64_setup.exe' 
+writemsg "Download $Filename"
+$DestinationPath = Join-Path $DownloadPath $Filename
+Invoke-DownloadFile $DestinationPath $Filename

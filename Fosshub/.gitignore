@@ -1,0 +1,10 @@
+# Prerequisites
+*.d
+*.aps
+*.db
+*.opendb
+.vs/
+.vs/**
+
+Download/
+Download/**
