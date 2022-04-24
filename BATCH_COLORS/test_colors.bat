@@ -3,13 +3,23 @@
 :: ==============================================================================
 :: 
 ::   out.bat
-:: 
+:: 	 wrote this to help out u/yyingh on reddit
+::
+::   https://www.reddit.com/r/PowerShell/comments/uaeqon/command_line_program_output_color/
+::   Based on my BuildAutomation scripts
+::   https://github.com/arsscriptum/BuildAutomation
 :: ==============================================================================
 ::   arsccriptum - made in quebec 2020 <guillaumeplante.qc@gmail.com>
 :: ==============================================================================
 
-echo Hi This is a test
-goto :test_colors
+call :test_colors
+call :__out_d_red "Hi This is a test... wrote this to help out u/yyingh on reddit"
+call :__out_d_grn "https://www.reddit.com/r/PowerShell/comments/uaeqon/command_line_program_output_color/"
+call :__out_d_yel "Here is dark RED, GREEN and YELLOW, but other escap codes exists:"
+call :__out_d_mag "like MAGENTA, and"
+call :__out_d_cya "CYAN"
+call :__out_l_blu "Based on my BuildAutomation scripts @ https://github.com/arsscriptum/BuildAutomation"
+goto :eof
 
 :: ==============================================================================
 ::   Test colors..
@@ -22,6 +32,22 @@ goto :test_colors
     echo.
     goto :eof
 
+:: ===========
+:: light blue
+:__out_l_blu
+    echo [94m%~1[0m
+    goto :eof
+
+:: ===========
+:: dark magena
+:__out_d_mag
+    echo [35m%~1[0m
+    goto :eof
+:: ===========
+:: dark cyan
+:__out_d_cya
+    echo [36m%~1[0m
+    goto :eof
 
 :: ===========
 :: dark red
