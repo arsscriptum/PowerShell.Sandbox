@@ -33,7 +33,7 @@ function writemsg{
     Write-Host -f White "$Message"
 }
 
-function Get-DownloadUrl{
+function Get-IRFanDownloadUrl{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$false)]
@@ -75,7 +75,7 @@ function Get-DownloadUrl{
 }
 
 
-function Invoke-DownloadFile{
+function Invoke-IRFanDownloadFile{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$True, Position=0)]
@@ -165,19 +165,21 @@ if(Test-Path -Path $DownloadPath){
     }
 }
 
-writemsg "Create Directory $DownloadPath"
-$Null = New-Item -Path $DownloadPath -ItemType "Directory" -Force -ErrorAction Ignore
+function Invoke-DownloadFosshub{
+    writemsg "Create Directory $DownloadPath"
+    $Null = New-Item -Path $DownloadPath -ItemType "Directory" -Force -ErrorAction Ignore
 
-# ------------------------------
-# iview460_x64 APP
-$Filename = 'iview460_x64_setup.exe' 
-writemsg "Download $Filename"
-$DestinationPath = Join-Path $DownloadPath $Filename
-Invoke-DownloadFile $DestinationPath $Filename
+    # ------------------------------
+    # iview460_x64 APP
+    $Filename = 'iview460_x64_setup.exe' 
+    writemsg "Download $Filename"
+    $DestinationPath = Join-Path $DownloadPath $Filename
+    Invoke-DownloadFile $DestinationPath $Filename
 
-# ------------------------------
-# PLUGINS
-$Filename = 'iview460_plugins_x64_setup.exe' 
-writemsg "Download $Filename"
-$DestinationPath = Join-Path $DownloadPath $Filename
-Invoke-DownloadFile $DestinationPath $Filename
+    # ------------------------------
+    # PLUGINS
+    $Filename = 'iview460_plugins_x64_setup.exe' 
+    writemsg "Download $Filename"
+    $DestinationPath = Join-Path $DownloadPath $Filename
+    Invoke-DownloadFile $DestinationPath $Filename
+}
