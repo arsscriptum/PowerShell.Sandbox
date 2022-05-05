@@ -1,0 +1,119 @@
+<#̷#̷\
+#̷\ 
+#̷\   ⼕龱ᗪ㠪⼕闩丂ㄒ龱尺 ᗪ㠪ᐯ㠪㇄龱尸爪㠪𝓝ㄒ
+#̷\    
+#̷\   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇨​​​​​🇴​​​​​🇩​​​​​🇪​​​​​🇨​​​​​🇦​​​​​🇸​​​​​🇹​​​​​🇴​​​​​🇷​​​​​@🇮​​​​​🇨​​​​​🇱​​​​​🇴​​​​​🇺​​​​​🇩​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
+#̷\
+#̷\   Generated on Sun, 19 Dec 2021 12:32:40 GMT 
+#̷\
+#̷##>
+
+
+
+#Requires -Version 5
+Set-StrictMode -Version 'Latest'
+
+# ------------------------------------
+# Script file - Assemblies - 
+# ------------------------------------
+$ScriptBlockAssemblies = "H4sIAAAAAAAACtVXbW/bNhD+HiD/4eAKsIRazqd96RCgiR1v2WLHiINmRWAUjHWO2dKkSlIwjK7/fUeJkmXHL3GwD5sQCDF5rw+fO55OT4LRRPPUfnjgMlELc2EMzp/E8g6nqFFO0MA5fAyj01cIvj+H5lCjQWmZ5Ur2NJvjQulvzbdod5TGVyv63UtmXq8zWhqL87YXaveUnptjlbuaLbh8PlKtCUe6+WsunA6fhsHQfEJtCJ979iSwXf1s99lXpSHG7/BL9OP0BOg5yscoRZzMKJOfpyfTTE7cGcBophbxSz1v/0FzizEF8KQMQuOGGwtMCJhkmuQs6JUjLmFnFA2Ip9BZMvnaqP8GOqwrNpnFt09fcWLBx7MlplL7A1ReIB6oAS5uuMSdavAYDEfXBMs4V+uzZ0fLQpzwob8aSBdJ8hIjCqkQf+zME4H2krIhpoSjLE2VtoaQzUQy1IoSMtG4kE0ZlUy4iupx6BbQog77TCbMKr08D6zOsPWJiQx7Ws2HPEVBufh1WGm753cUaZ88UALnFRggyWgjgnHNE9nj5AAHyg4yIW711Ty1yzCqy1wIzkzYlM21VWM1JTYOSuutQ/FPmTBvS2Di2EVw3y/Tzfh9bHwjtgW3k9k4uJ470IuN6IjiqJKqE74zY1Ki8FFBoxJqFFKuTAuHZSG6x7HExQ0VVwYEzaaH3V4Ki4Q01PRh03fOzHV6Etd3l/C/z863n+4+epYkG6lMT/A/TzH3Kv4t3tfTEKijXKpMJlXApt1R1FW4NH/iMmwWqTWjvIcHPZcB1Ankc3f3sT9s92TGUaLo4b+ulh2EJmUk3l86L1qJ1WbN6NkZQOcdFKZXy8SgxsfyR8WsPIrdE8Ku7fWL77BUcd2tPAfE4B4XLvPQkfkeHdRML91i1O5Ru3LproS7QgyZnTn539DGro9XRqJ2l2u6M4gmg02lvCC3K7nJwjmB99BsJ0I01xRJ6Q/FZZx7rUdQM1wo3OVW1q2XUt5kR81TWtW3qStfh27zLJOGTd1ok0vcZjbNbN5MaPOGPzkw/Ob25uHD9I4a+0Q33W/Gs1e5Flktyr0qntWe3XtFu5iiTIgunPiyhUNe+V4v900EVR927y5OueR5nyzrKy4Cr7pRecbxIWQgrkJJvPaOQEsfm0ABMciY+5nOahUe3KHJhKWj/n+Evu3Ku6Ej0GytJiC+0lrpCz9oWpXuuAF9+o3AA1GDRqPNtFyvn59l2+gw6ssvifDAtHQtM65o1WOERAJWAc97OARfytu0aELr9+kdPtOgizpeAVUNe+9uFEsorO8ZNZkERF6aDkm/vWMI2PrV1ILNz6FWOUO7btSCbR8w1ar/Msn9Fs5pH2lmhpBwnLqB/OAEFNXR26iqw7N2l+lvdwTCtnF7izaN3OS5mLed6mcUQi3WVXbNUKRYu7vKhLeS4DgikOEa3fwVWGfFyT+4S7xdQg8AAA=="
+
+# ------------------------------------
+# Script file - Exception - 
+# ------------------------------------
+$ScriptBlockException = "H4sIAAAAAAAACpVUa4saMRT9LvgfggiOYIb2c7Fg3Udb9mEdSykimM1cx3THZMiDrSz+996ZSXRnq2vrIPO4N+ece3Nu2q02XisnuRVKkjt4opdaKz0FrnTabj23WwR/8/EmzcF+EjIVMov6C//5QrBMKmMFN/FYpTCSLN8aYeLEFYUGY27xzzIYWavFg7MQ9SbJdwPJWrk8nWjFMX6ldGKZhfGayQzhr7wa0xuQXm9QU5W/rw6ZVoKzSuuQ9GZrYchePD5LvJkSi3APFvf2Yu+dLZydbQuI5snWWNjEt0yiug1IG4+cVZsKOX7RgUVYXTDNNtFBy3xSfgALOkKQlFmltyG3inuGBAuX2YJ0K1DfDqzpXOaXtJn0j3RvFDTGtmS4LDCE96NijuNMkvuHX8AtQsyYzsDWr/XyfsDpwm8Ohd+j0lF1FqFl6++wCuJJLvd5dKQzV7LdCGObvQqYhz1p5A5f0A0OvXtd4zHBLzHPKD3rk9cVnJAbWqTBOi0bae3Wrowerr2vcVhwKkORF2CZyM3bg1m5pX4849lh12oH/2klPxvd+j44x7BiuWlSmCdh+XrRLUvD2eeP3kI+7vdnpTSymmoucIM6z+92S/n8ftcJcQF5akoL1ELiK5fn22+O5XhKQBq8EKL7FsYzVQ9b1PdIdejWZMOoyUpXgSakVnKHATPhWhS2+jbTjHu3/tDCAv2MByPpLOX8cjq9ny4I/Ug6hN4pNNqNkEAoHnyQaeVkOla50uSC6ccppB/I3ygHhUu5lAhzbO1PyHP1VC8Wq+jQ3b53y2tUSvGw5I/kAfCopPQE7LUGkMcB6m4cWXet2Tbs4ylWkCmlJ4upWBt+wPnYlc+tP4l21B21BgAA"
+
+# ------------------------------------
+# Script file - MessageBox - 
+# ------------------------------------
+$ScriptBlockMessageBox = "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"
+
+# ------------------------------------
+# Script file - Miscellaneous - 
+# ------------------------------------
+$ScriptBlockMiscellaneous = "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"
+
+# ------------------------------------
+# Script file - Registry - 
+# ------------------------------------
+$ScriptBlockRegistry = "H4sIAAAAAAAACuVYUW+bSBB+j5T/sOKsA1QT3Usf2irSuZQ0UR27Mk6jqo4sgtfx3mGWLkscK5f/frO7gBcMsdP6pSp5WMAz38zOfDOz5PjoGP7mWRxyQmM0xil3RviOpJytvwRRho+PHo+PEFxJwIIlstQD+iYfMcfMugziWcApW592OMuwfVOIgD6BX/CA8kEWRUPmLRO+tuybzueAL7oHQfJicFSJ2WIn4obMLSem3JKbEaaQNGjb+U7ExTDPWIw68yBKYY/i1ZNaAA9pgh8xdy44Xn5mNMGMr5GGiP5DPo5wyJ3h7T+wIMd7SGAPpaxyD14zRllPhdjnNAHFYcYdsZdtl8TWS4/UTRjwcIF2ui/lK/kU3v9O6YzLiDZnszPCaRbxU+sAabW3zSv0fZNXd1ZLoJZC/xdL4QBUD4OU77ZChr3YMMArmdxKUp0zykKMqsVI7mLKcF6OlXw00geMb3fIqhVV8TIKukviGuElvcfttHOEklJ9kbca3QWJ6lHYbUttQ8W7sNxk5IAdSiO48PM3JvhhoMbrpF4qLdxV6dcqp8bSn+P4D/J8X5pXqF65xUCzmi/PtYGWGvr56inkRUKQTAtqNHbIqpJwT7Wygn0ug00ahd9lYX1zl7MI8/cknpH4zvKzJKGMp/6CZpEYcyFO04J1+xShdGdD015EgtQyE3MP5hYC4CO4our0eSKLSJPZObnHKTpFf1vm+Sf3yuzC0r+UiztSiyuXK18u3tep2+/5vudPR8PhuHx3NRp5g/H0yvdGxbv+0O31p5c99/xi4BUvhYBf13KHg7OLj6Z2Euj0cQxeyW2cwP0dsKVSg1LAiTh6bT+W6RQhqdJPSEoMnweQmWvCF5bp0mWSQegnZmXciesPRczC8piRZUW+Kl0V9rNbX0bfelOTu2aEY+cLZrc0xchQhY00XKOxFmtq0hiZKWugoUWLlE5cxDP8MJxbpnRWExGJbnD1r26H2K0mpRJJlbbRgCbWPEpvzXYcIYFCGkE9tUGKTG0YeeLSmAckTi0pZyMHf0edM1kf6LGGDsWASIzuhTZaCHXj3RYnKq7n7JLeK3btS722lBew9o70pWX6mhGLWHZVAl+IJYIoAyzCpUq4zvAidQ21rJFQjIE6GLSF58GqBb8DDfrJ82iqU+xAgY61Y4N6Y9oF5u4JlverlpG3bw3BSMlTr3UC9Cq3+QqZ6mnTyaufSFK5PgifWkfd5iO5OD9uPo1EbywnnDcjMI1edHjcPbf0sdT9AaxQx1oR2ONNx41IcksDNqvNudJYP0j5J7zOg2wItryd+HTOVwHDk0sSMprC0+Qa5jddpRM3YwzHHDKXQlgmvSSB4Z5OIDAYYmI0o6vzCsDnz0bbqXHj7xbJcg/Fx3QphJxRsGocCxpxGg4nyGhqCoWKbKOCCtBFEV8wukLG+2CGCgQkdXVrW9/NYEALrLF5lL+K59yYoROzcFywy3sQAZP/OwDiLyH3yGAqyCf4ARv2iU8zOF1uNP+UoLmutjVFbp36WmjhGLaCfzmEOBEs/4BhnkQwT6YwTMRPwPrw32pFHP0PWc1sCMcTAAA="
+
+
+# ------------------------------------
+# Loader
+# ------------------------------------
+function ConvertFrom-Base64CompressedScriptBlock {
+
+    [CmdletBinding()] param(
+        [String]
+        $ScriptBlock
+    )
+
+    # Take my B64 string and do a Base64 to Byte array conversion of compressed data
+    $ScriptBlockCompressed = [System.Convert]::FromBase64String($ScriptBlock)
+
+    # Then decompress script's data
+    $InputStream = New-Object System.IO.MemoryStream(, $ScriptBlockCompressed)
+    $GzipStream = New-Object System.IO.Compression.GzipStream $InputStream, ([System.IO.Compression.CompressionMode]::Decompress)
+    $StreamReader = New-Object System.IO.StreamReader($GzipStream)
+    $ScriptBlockDecompressed = $StreamReader.ReadToEnd()
+    # And close the streams
+    $GzipStream.Close()
+    $InputStream.Close()
+
+    $ScriptBlockDecompressed
+}
+
+# For each scripts in the module, decompress and load it.
+
+$ScriptList = @('Assemblies','Exception','MessageBox','Miscellaneous','Registry')
+$ScriptList | ForEach-Object {
+    $ScriptId = $_
+     $ScriptBlock = "`$ScriptBlock$($ScriptId)" | Invoke-Expression
+    $ClearScript = ConvertFrom-Base64CompressedScriptBlock -ScriptBlock $ScriptBlock
+    try{
+        $ClearScript | Invoke-Expression
+    }catch{
+        Write-Host "===============================" -f DarkGray
+        Write-Host "$ClearScript" -f DarkGray
+        Write-Host "===============================" -f DarkGray
+        Write-Error "ERROR IN script $ScriptId . Details $_"
+    }
+}
+
+
+Start-RegistryEditor -c
+
+# SIG # Begin signature block
+# MIIFxAYJKoZIhvcNAQcCoIIFtTCCBbECAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUW8z+AGFFK/w+OS+qv+6TUkP5
+# elSgggNNMIIDSTCCAjWgAwIBAgIQmkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCHQUA
+# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
+# Fw0yMjAyMDkyMzI4NDRaFw0zOTEyMzEyMzU5NTlaMCUxIzAhBgNVBAMTGkFyc1Nj
+# cmlwdHVtIFBvd2VyU2hlbGwgQ1NDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+# CgKCAQEA60ec8x1ehhllMQ4t+AX05JLoCa90P7LIqhn6Zcqr+kvLSYYp3sOJ3oVy
+# hv0wUFZUIAJIahv5lS1aSY39CCNN+w47aKGI9uLTDmw22JmsanE9w4vrqKLwqp2K
+# +jPn2tj5OFVilNbikqpbH5bbUINnKCDRPnBld1D+xoQs/iGKod3xhYuIdYze2Edr
+# 5WWTKvTIEqcEobsuT/VlfglPxJW4MbHXRn16jS+KN3EFNHgKp4e1Px0bhVQvIb9V
+# 3ODwC2drbaJ+f5PXkD1lX28VCQDhoAOjr02HUuipVedhjubfCmM33+LRoD7u6aEl
+# KUUnbOnC3gVVIGcCXWsrgyvyjqM2WQIDAQABo3YwdDATBgNVHSUEDDAKBggrBgEF
+# BQcDAzBdBgNVHQEEVjBUgBD8gBzCH4SdVIksYQ0DovzKoS4wLDEqMCgGA1UEAxMh
+# UG93ZXJTaGVsbCBMb2NhbCBDZXJ0aWZpY2F0ZSBSb290ghABvvi0sAAYvk29NHWg
+# Q1DUMAkGBSsOAwIdBQADggEBAI8+KceC8Pk+lL3s/ZY1v1ZO6jj9cKMYlMJqT0yT
+# 3WEXZdb7MJ5gkDrWw1FoTg0pqz7m8l6RSWL74sFDeAUaOQEi/axV13vJ12sQm6Me
+# 3QZHiiPzr/pSQ98qcDp9jR8iZorHZ5163TZue1cW8ZawZRhhtHJfD0Sy64kcmNN/
+# 56TCroA75XdrSGjjg+gGevg0LoZg2jpYYhLipOFpWzAJqk/zt0K9xHRuoBUpvCze
+# yrR9MljczZV0NWl3oVDu+pNQx1ALBt9h8YpikYHYrl8R5xt3rh9BuonabUZsTaw+
+# xzzT9U9JMxNv05QeJHCgdCN3lobObv0IA6e/xTHkdlXTsdgxggHhMIIB3QIBATBA
+# MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdAIQ
+# mkSKRKW8Cb1IhBWj4NDm0TAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAig
+# AoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgEL
+# MQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQU1SMqbs4c7S6ESNIT4BfP
+# SBS2aJYwDQYJKoZIhvcNAQEBBQAEggEANal9PRiwym4Qh2GOFmhE58FNOShEUnw7
+# +IawvS79Krffyfu9Qhr6TQOpLnPOtclnfVQO2rSmgtahJ26Hn24oCX37avNPaJNA
+# grKDUTi1alLa96TjvJpB6at3pwEa9JpFEdw1sIUSTTHnW42PXUhF2g9spENcmwmq
+# C9Gr0cdyGH1PBpLnpJeSkn/uaNOvKELK+Rc094HSQ8kmPrNkZVTZ1lGm7LR6tFow
+# Ns3mDj+1THFlVq5RnFWDrXnk4nSWcGfCgJvZ9vPTjHnW3R4c4jDMzk3959nKuo2f
+# bGf0cpoRAUbEP587+bz9aJ3hOYGQ4fPSag0UM9fvcLdFdXc1Ikkldw==
+# SIG # End signature block
