@@ -317,7 +317,7 @@ function Update-ScriptVersion{
         Write-Host -f DarkGreen "Done";
         Write-Host -n -f DarkGray "Update Version String in script...   "
         $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
-        $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"$($CurrentVersionString)`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
+        $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"$($Script:CurrentVersionString)`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
         Write-Host -f DarkGreen "Done";
 
