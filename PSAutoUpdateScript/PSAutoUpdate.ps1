@@ -51,8 +51,8 @@ $Script:Debug = $false
 # Gather System Info
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
-[string]$Script:CurrentVersionString = "1.0.0.1"
-if($Script:Debug){
+[string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
+if($Script:CurrentVersionString -eq '__CURRENT_VERSION_STRING__'){
     [string]$Script:CurrentVersionString = "1.0.0.1"
 }
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
@@ -438,7 +438,7 @@ if($AutoCheck){
         Write-Host -n -f DarkGray "Download Latest...   "
         Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
         Write-Host -f DarkGreen "Done";
-        Write-Host -n -f DarkGray "Update Version String in script...   "
+        Write-Host -n -f DarkGray "Update Version String in script... $Script:LatestVersionString  "
         $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
         $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
@@ -478,6 +478,7 @@ if($AutoCheck){
         #//====================================================================================//
 
 }
+
 
 
 
