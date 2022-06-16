@@ -44,6 +44,9 @@
 
 
 
+$Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
+   
+
 
 # Gather System Info
 #/======================================================================================/
@@ -256,7 +259,7 @@ function Get-CurrentScriptVersion{
     [CmdletBinding(SupportsShouldProcess)]
     param(
     ) 
-    cls
+   
     [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
     $Current = $Script:CurrentVersion.ToString()
     Write-Host -f DarkYellow "`tCURRENT VERSION INFORMATION"; Write-Host -f DarkRed "`t===============================`n";
@@ -271,26 +274,21 @@ function Get-LatestScriptVersion{
     [CmdletBinding(SupportsShouldProcess)]
     param(
     ) 
-    Write-Host "`n`n===============================================================================" -f DarkRed
-    Write-Host "GETTING LATEST SCRIPT VERSION" -f DarkYellow;
-    Write-Host "===============================================================================" -f DarkRed    
+
+    [string]$Script:LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
+    $Current = $Script:CurrentVersion.ToString()
+
+    [Version]$Script:LatestVersion = $Script:LatestVersionString
+    Write-Host -f DarkYellow "`tLATEST VERSION INFORMATION"; Write-Host -f DarkRed "`t===============================`n";
+    Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$Current";
     
+    Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersionString";
+    Write-Host -n -f DarkYellow "`tLatest Object`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
 
 
-    [string]$LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
-   
+    Read-Host -Prompt 'Press any key to return to main menu'
 
-    [Version]$NewVersion = $LatestVersionString
-    $NewVersionBuild = $NewVersion.Build
-    $NewVersionBuild++
-    $NewVersion = New-Object -TypeName System.Version -ArgumentList $NewVersion.Major,$NewVersion.Minor,$NewVersionBuild
-    [string]$NewVersionString = $NewVersion.ToString()
-    Write-Host "Current`t$(($CurrentVersion).Major).$(($CurrentVersion).Minor).$(($CurrentVersion).Build)" -f Gray;
-    Write-Host "NEW VER`t$NewVersionString" -f Gray;
-    Set-Content -Path $Script:VersionFile -Value $NewVersionString
-    $Script:UpdatedVersion = $NewVersionString
-    # We're going to add 1 to the revision value since a new commit has been merged to Master
-    # This means that the major / minor / build values will be consistent across GitHub and the Gallery
+    
 
 
 }
