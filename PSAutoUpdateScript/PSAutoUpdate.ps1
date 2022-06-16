@@ -310,14 +310,16 @@ function Update-ScriptVersion{
         Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
         Write-Host -f DarkGreen "Done";
         Write-Host -n -f DarkGray "Update Version String in script...   "
-        $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
-        $Script:FileContent = $Script:TmpScriptFile -replace "__CURRENT_VERSION_STRING__", $Script:LatestVersionString
+        $Script:FileContent = (Get-Content -Path $Script:ScriptFile -Encoding "windows-1251" -Raw)
+        $Script:FileContent = $Script:FileContent -replace "__CURRENT_VERSION_STRING__", $Script:LatestVersionString
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent
-        Set-Content -Path $Script:ScriptFile -Value $Script:FileContent
-        Write-Host -f DarkGreen "Done";
-        Read-Host -Prompt 'Press any key to reload script'
 
-         Start-Process PowerShell.exe -ArgumentList "-NoProfile -File `"$PSCommandPath`"" -
+        #Set-Content -Path $Script:ScriptFile -Value $Script:FileContent
+        Write-Host -f DarkGreen "Done";
+        Read-Host -Prompt 'Press any key to check diffs'
+        &"C:\Programs\Shims\Compare.exe" "$Script:TmpScriptFile" "$Script:ScriptFile"
+        Read-Host -Prompt 'Press any key to reload script'
+         Start-Process pwsh.exe -ArgumentList "-NoProfile -File `"$Script:TmpScriptFile`"" -
 
     }else{
         Write-Host "No Update Required"
