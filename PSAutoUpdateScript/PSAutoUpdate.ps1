@@ -57,7 +57,7 @@ if($Script:CurrentVersionString -eq '__CURRENT_VERSION_STRING__'){
 }
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
 [string]$Script:RootPath                       = (Get-Location).Path
-[string]$script:CurrentGitRev = '' 
+[string]$script:CurrentGitRev = git rev-parse --short HEAD
 [string]$script:LatestScriptVersionString = '0.0.0.0'
 [string]$script:LatestScriptRevision = New-Object -TypeName System.Version -ArgumentList $Script:LatestScriptVersionString.Major,$Script:LatestScriptVersionString.Minor,$Script:LatestScriptVersionString.Revision
 [string]$Script:ScriptFile = Join-Path $PSScriptRoot 'PSAutoUpdate.ps1'
@@ -66,8 +66,10 @@ if($Script:CurrentVersionString -eq '__CURRENT_VERSION_STRING__'){
 [string]$Script:VersionFile = Join-Path $Script:RootPath 'Version.nfo'
 [string]$script:UserName = ((query user | findstr 'Active').split('>')[1]).split('')[0]
 [string]$script:User = (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
-[string]$script:HostName = $ENV:hostname
+[string]$script:HostName = $ENV:COMPUTERNAME
 [string]$script:IsAdmin = $False
+$Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
+
 $script:IPv4 = (Get-NetIPAddress -AddressFamily IPv4).IPAddress | Select-Object -First 1
 if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
  $script:IsAdmin = $True
@@ -389,10 +391,10 @@ function Show-Menu
 
     uimt 'General Functions                                                  ' -t; uimt "System Info`n" -t
     uimt '=======================================================            '; uimt "======================================`n" ; 
-    uiml " 1. Run Local Script                                               "; uimi "Hostname:                 $HostName" -t;
-    uiml " 2. Get Current Version Information                                "; uimi "Administrarot             $IsAdmin" -t;
-    uiml " 3. Get Latest Script Version (no update)                          "; uimi "Network Status            $IsOffline" -t;
-    uiml " 4. Update Local Script file if new version available              "; uimi "IPv4 Address:             $IPv4" -t;
+    uiml " 1. Run Local Script                                               "; uimi "Hostname:                    $HostName" -t;
+    uiml " 2. Get Current Version Information                                "; uimi "Administrarot                $IsAdmin" -t;
+    uiml " 3. Get Latest Script Version (no update)                          "; uimi "Network Status (is online)   $Script:IsOnline" -t;
+    uiml " 4. Update Local Script file if new version available              "; uimi "IPv4 Address:                $IPv4" -t;
     uiml " 5. Update Network Status                                          "; uimi "`n"
     uiml "                                                                   "; uimt " Script Information`n" -t
     uimt "                                                                   "; uimt "======================================`n"
@@ -417,8 +419,24 @@ function Show-End
 }
 #//====================================================================================//
 
+function Invoke-NetTest
+{
+
+    if($Script:IsOnline -eq $False){
+        Clear-Host
+        Write-Host -f DarkRed  "`tYOU ARE OFFLINE"
+        Write-Host -f DarkYellow  "`t===============`n`n"
+        Write-Host -f Yellow  "You are not connected to the internet. You cannot update the script!`n`n"
+        Start-Sleep 2
+            do{
+                Read-Host -Prompt 'Press any key to test network'
+                $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
+            }while($Script:IsOnline -eq $False)
+        cls
+    }
 
 
+}
 
 
 if($AutoCheck){
@@ -441,7 +459,7 @@ if($AutoCheck){
         $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
         Write-Host -f DarkGreen "Done";
-Copy-Item $Script:TmpScriptFile $Script:ScriptFile
+        Copy-Item $Script:TmpScriptFile $Script:ScriptFile
         Write-Host "You can restart the script now..."
         return
 
@@ -457,6 +475,10 @@ Copy-Item $Script:TmpScriptFile $Script:ScriptFile
 #/======================================================================================/
     do
     {
+        if($Script:IsOnline -eq $False){
+            Invoke-NetTest
+            continue
+        }
     Show-Menu
     $Option = Read-Host -Prompt 'Please select an option'
     switch ($Option)
