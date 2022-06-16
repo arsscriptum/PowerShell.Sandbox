@@ -46,7 +46,7 @@
 
 $Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 $Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
-$Script:Debug = $False
+$Script:Debug = $false
 
 # Gather System Info
 #/======================================================================================/
@@ -331,10 +331,10 @@ function Update-ScriptVersion{
 
         [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
         [Version]$Script:CurrentVersion =  $Script:CurrentVersionString      
-        #$PwshExe = (Get-Command 'pwsh.exe').Source
-        #Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
-        #Start-Sleep 3
-        #Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`""
+        $PwshExe = (Get-Command 'pwsh.exe').Source
+        Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
+        Start-Sleep 3
+        Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`""
 
     }else{
         Write-Host "No Update Required"
