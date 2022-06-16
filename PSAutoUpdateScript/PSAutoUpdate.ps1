@@ -344,10 +344,14 @@ function Update-ScriptVersion{
 function Get-AllPreviousVersion{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$false)]
-        [string]$Option
+       
     ) 
-
+Clear-Host
+        Write-Host -f DarkRed  "`tGIT REVISIONS"
+        Write-Host -f DarkYellow  "`t===============`n`n"
+     $val = git log --oneline
+     $val
+        Read-Host -Prompt 'Press any key to go back'
 }
 
 function Start-Admin{
@@ -375,9 +379,15 @@ function Start-Admin{
 function Update-NetworkSTatus{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$false)]
-        [string]$Option
+
     ) 
+        Clear-Host
+        Write-Host -f DarkRed  "`tPLEASE WAIT - UPDATING NETWORK STATUS"
+        Write-Host -f DarkYellow  "`t===============`n`n"
+        $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
+        Start-Sleep 2
+        
+    
 
 }
 
@@ -395,7 +405,7 @@ function Show-Menu
     uiml " 2. Get Current Version Information                                "; uimi "Administrarot                $IsAdmin" -t;
     uiml " 3. Get Latest Script Version (no update)                          "; uimi "Network Status (is online)   $Script:IsOnline" -t;
     uiml " 4. Update Local Script file if new version available              "; uimi "IPv4 Address:                $IPv4" -t;
-    uiml " 5. Update Network Status                                          "; uimi "`n"
+    uiml " 5. List Revisions                                                 "; uimi "`n"
     uiml "                                                                   "; uimt " Script Information`n" -t
     uimt "                                                                   "; uimt "======================================`n"
     uimi "A) Admin Mode                                                      " -s; uimi "Current Script Version:   $Script:CurrentVersion"
@@ -432,7 +442,7 @@ function Invoke-NetTest
                 Read-Host -Prompt 'Press any key to test network'
                 $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
             }while($Script:IsOnline -eq $False)
-        cls
+            cls
     }
 
 
@@ -488,8 +498,8 @@ if($AutoCheck){
         2 {Get-CurrentScriptVersion}
         3 {Get-LatestScriptVersion}
         4 {Update-ScriptVersion}
-        5 {Get-CurrentScriptVersion}
-        6 {Get-AllPreviousVersion}
+        
+        5 {Get-AllPreviousVersion}
         A {Start-Admin}
         N {Update-NetworkSTatus}
         X {Exit}
