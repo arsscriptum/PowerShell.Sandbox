@@ -328,7 +328,10 @@ function Update-ScriptVersion{
 
         Read-Host -Prompt 'Press any key to reload script'
         Copy-Item $Script:TmpScriptFile $Script:ScriptFile
-         Start-Process pwsh.exe -ArgumentList "-NoProfile -File `"$Script:TmpScriptFile`"" -
+        $PwshExe = (Get-Command 'pwsh.exe').Source
+        Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
+        Start-Sleep 3
+         Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`""
 
     }else{
         Write-Host "No Update Required"
@@ -358,7 +361,10 @@ function Start-Admin{
         # Check if the shell is running as Administrator. If not, call itself with "Run as
         # Admin", then quit
         if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-            Start-Process PowerShell.exe -ArgumentList "-NoProfile -File `"$PSCommandPath`"" -Verb RunAs
+           $PwshExe = (Get-Command 'pwsh.exe').Source
+            Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
+           Start-Sleep 3
+            Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`"" -Verb RunAs
           Exit
         }
 }
@@ -438,4 +444,5 @@ do
     }
 } until ($Option -eq 'X')
 #//====================================================================================//
+
 
