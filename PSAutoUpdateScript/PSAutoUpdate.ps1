@@ -328,9 +328,7 @@ function Update-ScriptVersion{
 
         Read-Host -Prompt 'Press any key to reload script'
         Copy-Item $Script:TmpScriptFile $Script:ScriptFile
-
-        [string]$Script:CurrentVersionString = "2.0.1.2"
-        [Version]$Script:CurrentVersion =  $Script:CurrentVersionString      
+  
         $PwshExe = (Get-Command 'pwsh.exe').Source
         Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
         Start-Sleep 3
@@ -443,7 +441,7 @@ if($AutoCheck){
         $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
         Write-Host -f DarkGreen "Done";
-
+Copy-Item $Script:TmpScriptFile $Script:ScriptFile
         Write-Host "You can restart the script now..."
         return
 
