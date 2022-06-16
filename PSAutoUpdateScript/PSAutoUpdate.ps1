@@ -44,206 +44,54 @@
 
 
 
+#===============================================================================
+# Variables
+#===============================================================================
+
+[string]$Script:VarsFile = Join-Path $PSScriptRoot 'dependencies/Vars.ps1'
+[string]$Script:DepsFile = Join-Path $PSScriptRoot 'dependencies/Deps.ps1'
 $Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 $Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
 $Script:Debug = $false
-
-# Gather System Info
-#/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
+[string]$script:DEFAULT_VERSION = '1.0.0.0'
 [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
 if($Script:CurrentVersionString -eq '__CURRENT_VERSION_STRING__'){
-    [string]$Script:CurrentVersionString = "1.0.0.1"
+    [string]$Script:CurrentVersionString = $script:DEFAULT_VERSION
 }
-[Version]$Script:CurrentVersion =  $Script:CurrentVersionString
-[string]$Script:RootPath                       = (Get-Location).Path
-[string]$script:CurrentGitRev = git rev-parse --short HEAD
-[string]$script:LatestScriptVersionString = '0.0.0.0'
-[string]$script:LatestScriptRevision = New-Object -TypeName System.Version -ArgumentList $Script:LatestScriptVersionString.Major,$Script:LatestScriptVersionString.Minor,$Script:LatestScriptVersionString.Revision
-[string]$Script:ScriptFile = Join-Path $PSScriptRoot 'PSAutoUpdate.ps1'
-[string]$Script:BackupFile = Join-Path $ENV:TEMP 'Backup.ps1'
-[string]$Script:TmpScriptFile = Join-Path $ENV:TEMP 'PSAutoUpdate.ps1'
-[string]$Script:VersionFile = Join-Path $Script:RootPath 'Version.nfo'
-[string]$script:UserName = ((query user | findstr 'Active').split('>')[1]).split('')[0]
-[string]$script:User = (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
-[string]$script:HostName = $ENV:COMPUTERNAME
-[string]$script:IsAdmin = $False
-$Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
 
-$script:IPv4 = (Get-NetIPAddress -AddressFamily IPv4).IPAddress | Select-Object -First 1
-if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
- $script:IsAdmin = $True
+
+
+
+#===============================================================================
+# Check dependencies
+#===============================================================================
+if(-not(Test-Path -Path $Script:VarsFile -PathType Leaf)){
+    Write-Host -f DarkRed "[ERROR] " -NoNewline
+    Write-Host " + Missing dependencies File '$Script:VarsFile'" -f DarkGray
+    return
+}
+
+if(-not(Test-Path -Path $Script:DepsFile -PathType Leaf)){
+    Write-Host -f DarkRed "[ERROR] " -NoNewline
+    Write-Host " + Missing dependencies File '$Script:DepsFile'" -f DarkGray
+    return
 }
 
 
 #===============================================================================
-# Check Folders
+# dependencies
 #===============================================================================
 
-#if(-not(Test-Path -Path $Script:VersionFile -PathType Leaf)){
-#    Write-Host -f DarkRed "[ERROR] " -NoNewline
-#    Write-Host " + Missing Version File '$Script:VersionFile' (are you in a Module directory)" -f DarkGray
-#    return
-#}
+
+. "$Script:DepsFile"
+. "$Script:VarsFile"
 
 
+Update-AllVersionValues -CheckOnline
+Update-NetworkStatus
 
-function uimi{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message,
-        [Parameter(Mandatory=$false)]
-        [Alias('t')]
-        [switch]$Title,
-        [Parameter(Mandatory=$false)]
-        [Alias('s')]
-        [switch]$SysOptions
-    ) 
-    if($Title){
-        Write-Host -f Gray "$Message"    
-    }elseif($SysOptions){
-        Write-Host -n -f Red "$Message"
-    }else{
-
-        Write-Host -f Cyan "$Message"
-    }
-    
-}
-
-function uimt{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message,
-        [Parameter(Mandatory=$false)]
-        [Alias('t')]
-        [switch]$Title
-    ) 
-    if($Title){
-        Write-Host -n -f DarkRed "$Message"    
-    }else{
-        Write-Host -n -f DarkYellow "$Message"
-    }
-    
-}
-
-
-
-function uiml{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message
-    ) 
-
-    Write-Host -n -f White "$Message"
-}
-
-
-
-
-function Get-OnlineFileNoCache{
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$Url,
-        [Parameter(Mandatory=$false)]
-        [string]$Path,
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyAddress,
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyUser,
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyPassword,
-        [Parameter(Mandatory=$false)]
-        [string]$UserAgent=""
-    )
-
-    if( -not ($PSBoundParameters.ContainsKey('Path') )){
-        $Path = (Get-Location).Path
-        [Uri]$Val = $Url;
-        $Name = $Val.Segments[$Val.Segments.Length-1]
-        $Path = Join-Path $Path $Name
-        Write-Warning ("NetGetFileNoCache using path $Path")
-    }
-    $ForceNoCache=$True
-
-    $client = New-Object Net.WebClient
-    if( $PSBoundParameters.ContainsKey('ProxyAddress') ){
-        Write-Warning ("NetGetFileNoCache''s -ProxyAddress parameter is not tested.")
-        $proxy = New-object System.Net.WebProxy "$ProxyAddress"
-        $proxy.Credentials = New-Object System.Net.NetworkCredential ($ProxyUser, $ProxyPassword) 
-        $client.proxy=$proxy
-    }
-    
-    if($UserAgent -ne ""){
-        $Client.Headers.Add("user-agent", "$UserAgent")     
-    }else{
-        $Client.Headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Mobile/15E148 Safari/604.1") 
-    }
-
-    $RequestUrl = "$Url"
-
-    if ($ForceNoCache) {
-        # doesn’t use the cache at all
-        $client.CachePolicy = New-Object Net.Cache.RequestCachePolicy([Net.Cache.RequestCacheLevel]::NoCacheNoStore)
-
-        $RandId=(new-guid).Guid
-        $RandId=$RandId -replace "-"
-        $RequestUrl = "$Url" + "?id=$RandId"
-    }
-    Write-Host "NetGetFileNoCache: Requesting $RequestUrl"
-    $client.DownloadFile($RequestUrl,$Path)
-}
-
-function Get-OnlineStringNoCache{
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$Url,
-       
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyAddress,
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyUser,
-        [Parameter(Mandatory=$false)]
-        [string]$ProxyPassword,
-        [Parameter(Mandatory=$false)]
-        [string]$UserAgent=""
-    )
-
-    $ForceNoCache=$True
-
-    $client = New-Object Net.WebClient
-    if( $PSBoundParameters.ContainsKey('ProxyAddress') ){
-        Write-Warning ('NetGetStringNoCache''s -ProxyAddress parameter is not tested.')
-        $proxy = New-object System.Net.WebProxy "$ProxyAddress"
-        $proxy.Credentials = New-Object System.Net.NetworkCredential ($ProxyUser, $ProxyPassword) 
-        $client.proxy=$proxy
-    }
-    
-    if($UserAgent -ne ""){
-        $Client.Headers.Add("user-agent", "$UserAgent")     
-    }else{
-        $Client.Headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Mobile/15E148 Safari/604.1") 
-    }
-
-    $RequestUrl = "$Url"
-
-    if ($ForceNoCache) {
-        # doesn’t use the cache at all
-        $client.CachePolicy = New-Object Net.Cache.RequestCachePolicy([Net.Cache.RequestCacheLevel]::NoCacheNoStore)
-
-        $RandId=(new-guid).Guid
-        $RandId=$RandId -replace "-"
-        $RequestUrl = "$Url" + "?id=$RandId"
-    }
-    Write-Verbose "NetGetStringNoCache: Requesting $RequestUrl"
-    $client.DownloadString($RequestUrl)
-}
-
-
+Start-Sleep 5
 function Invoke-Hidden{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -376,21 +224,6 @@ function Start-Admin{
         }
 }
 
-function Update-NetworkSTatus{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-
-    ) 
-        Clear-Host
-        Write-Host -f DarkRed  "`tPLEASE WAIT - UPDATING NETWORK STATUS"
-        Write-Host -f DarkYellow  "`t===============`n`n"
-        $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
-        Start-Sleep 2
-        
-    
-
-}
-
 
 
 # Display Main Menu
@@ -431,7 +264,7 @@ function Show-End
 
 function Invoke-NetTest
 {
-
+        return
     if($Script:IsOnline -eq $False){
         Clear-Host
         Write-Host -f DarkRed  "`tYOU ARE OFFLINE"
@@ -440,7 +273,7 @@ function Invoke-NetTest
         Start-Sleep 2
             do{
                 Read-Host -Prompt 'Press any key to test network'
-                $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com').PingSucceeded
+                $Script:IsOnline = (Test-CustomNetConnection -ComputerName 'github.com')
             }while($Script:IsOnline -eq $False)
             cls
     }
