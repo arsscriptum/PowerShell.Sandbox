@@ -52,7 +52,6 @@ $Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/Pow
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
 [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
-#[string]$Script:CurrentVersionString = '1.1.2.2'
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
 [string]$Script:RootPath                       = (Get-Location).Path
 [string]$script:CurrentGitRev = '' 
