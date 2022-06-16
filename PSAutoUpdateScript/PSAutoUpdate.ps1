@@ -68,9 +68,9 @@ if($Script:Debug){
 [string]$script:User = (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 [string]$script:HostName = $ENV:hostname
 [string]$script:IsAdmin = $False
-[string]$script:IPv4 = (Get-NetIPAddress -AddressFamily IPv4).IPAddress | Select-Object -First 1
+$script:IPv4 = (Get-NetIPAddress -AddressFamily IPv4).IPAddress | Select-Object -First 1
 if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
- 
+ $script:IsAdmin = $True
 }
 
 
