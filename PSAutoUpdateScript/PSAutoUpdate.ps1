@@ -61,6 +61,7 @@ if($Script:Debug){
 [string]$script:LatestScriptVersionString = '0.0.0.0'
 [string]$script:LatestScriptRevision = New-Object -TypeName System.Version -ArgumentList $Script:LatestScriptVersionString.Major,$Script:LatestScriptVersionString.Minor,$Script:LatestScriptVersionString.Revision
 [string]$Script:ScriptFile = Join-Path $PSScriptRoot 'PSAutoUpdate.ps1'
+[string]$Script:BackupFile = Join-Path $ENV:TEMP 'Backup.ps1'
 [string]$Script:TmpScriptFile = Join-Path $ENV:TEMP 'PSAutoUpdate.ps1'
 [string]$Script:VersionFile = Join-Path $Script:RootPath 'Version.nfo'
 [string]$script:UserName = ((query user | findstr 'Active').split('>')[1]).split('')[0]
@@ -308,6 +309,9 @@ function Update-ScriptVersion{
         Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$CurrentVersion";
         Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
         Write-Host -n -f DarkYellow "`tLocal Script Path`t`t"; Write-Host -f DarkRed "$Script:ScriptFile`n";
+        Write-Host -n -f DarkGray "Backup Current Script. $Script:ScriptFile to $Script:BackupFile   "
+        Copy-Item $Script:ScriptFile $Script:BackupFile
+        Write-Host -f DarkGreen "Done";
         Write-Host -n -f DarkGray "Download Latest...   "
         Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
         Write-Host -f DarkGreen "Done";
