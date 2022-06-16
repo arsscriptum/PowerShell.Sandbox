@@ -46,12 +46,15 @@
 
 $Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 $Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
-
+$Script:Debug = $False
 
 # Gather System Info
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
 [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
+if($Script:Debug){
+    [string]$Script:CurrentVersionString = "1.0.0.1"
+}
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
 [string]$Script:RootPath                       = (Get-Location).Path
 [string]$script:CurrentGitRev = '' 
@@ -312,12 +315,15 @@ function Update-ScriptVersion{
         $Script:FileContent = (Get-Content -Path $Script:ScriptFile -Encoding "windows-1251" -Raw)
         $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
         Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
-
-        #Set-Content -Path $Script:ScriptFile -Value $Script:FileContent
         Write-Host -f DarkGreen "Done";
-        Read-Host -Prompt 'Press any key to check diffs'
-        &"C:\Programs\Shims\Compare.exe" "$Script:TmpScriptFile" "$Script:ScriptFile"
+
+        if($Script:Debug){
+            Read-Host -Prompt 'Press any key to check diffs'
+            &"C:\Programs\Shims\Compare.exe" "$Script:TmpScriptFile" "$Script:ScriptFile"
+        }
+
         Read-Host -Prompt 'Press any key to reload script'
+        Set-Content -Path $Script:ScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
          Start-Process pwsh.exe -ArgumentList "-NoProfile -File `"$Script:TmpScriptFile`"" -
 
     }else{
