@@ -45,20 +45,22 @@
 
 
 $Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
-   
+$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
 
 
 # Gather System Info
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
-[string]$Script:CurrentVersionString = '1.2.3.1'
+[string]$Script:CurrentVersionString = '__CURRENT_VERSION_STRING__'
+#[string]$Script:CurrentVersionString = '1.1.2.2'
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
 [string]$Script:RootPath                       = (Get-Location).Path
 [string]$script:CurrentGitRev = '' 
 [string]$script:LatestScriptVersionString = '0.0.0.0'
 [string]$script:LatestScriptRevision = New-Object -TypeName System.Version -ArgumentList $Script:LatestScriptVersionString.Major,$Script:LatestScriptVersionString.Minor,$Script:LatestScriptVersionString.Revision
-
-[string]$Script:VersionFile                    = Join-Path $Script:RootPath 'Version.nfo'
+[string]$Script:ScriptFile = Join-Path $PSScriptRoot 'PSAutoUpdate.ps1'
+[string]$Script:TmpScriptFile = Join-Path $ENV:TEMP 'PSAutoUpdate.ps1'
+[string]$Script:VersionFile = Join-Path $Script:RootPath 'Version.nfo'
 [string]$script:UserName = ((query user | findstr 'Active').split('>')[1]).split('')[0]
 [string]$script:User = (Get-CimInstance -ClassName Win32_ComputerSystem).UserName
 [string]$script:HostName = $ENV:hostname
@@ -296,10 +298,30 @@ function Get-LatestScriptVersion{
 function Update-ScriptVersion{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$false)]
-        [string]$Option
     ) 
+    [string]$Script:LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
+    [Version]$Script:LatestVersion = $Script:LatestVersionString
+    if($Script:CurrentVersion -lt $Script:LatestVersion){
+        Write-Host -f DarkYellow "`t VERSION UPDATE"; Write-Host -f DarkRed "`t===============================`n";
+        Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$CurrentVersion";
+        Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
+        Write-Host -n -f DarkYellow "`tLocal Script Path`t`t"; Write-Host -f DarkRed "$Script:ScriptFile`n";
+        Write-Host -n -f DarkGray "Download Latest...   "
+        Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
+        Write-Host -f DarkGreen "Done";
+        Write-Host -n -f DarkGray "Update Version String in script...   "
+        $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
+        $Script:FileContent = $Script:FileContent -replace "__CURRENT_VERSION_STRING__", $Script:LatestVersionString
+        Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent
+        #Set-Content -Path $Script:ScriptFile -Value $Script:FileContent
+        Write-Host -f DarkGreen "Done";
+        Read-Host -Prompt 'Press any key to reload script'
 
+         Start-Process PowerShell.exe -ArgumentList "-NoProfile -File `"$PSCommandPath`"" -
+
+    }else{
+        Write-Host "No Update Required"
+    }
 }
 
 function Get-AllPreviousVersion{
@@ -350,16 +372,16 @@ function Show-Menu
     uimt 'General Functions                                                  ' -t; uimt "System Info`n" -t
     uimt '=======================================================            '; uimt "======================================`n" ; 
     uiml " 1. Run Local Script                                               "; uimi "Hostname:                 $HostName" -t;
-    uiml " 2. Check for latest script version                                "; uimi "Administrarot             $IsAdmin" -t;
-    uiml " 3. Update to latest script version                                "; uimi "Network Status            $IsOffline" -t;
-    uiml " 4. List all previous script version and GIT hashes                "; uimi "IPv4 Address:             $IPv4" -t;
-    uiml " 5. Dump Current Script Version                                    "; uimi "`n"
-    uiml " 6. Update Network Status                                          "; uimt " Script Information`n" -t
+    uiml " 2. Get Current Version Information                                "; uimi "Administrarot             $IsAdmin" -t;
+    uiml " 3. Get Latest Script Version (no update)                          "; uimi "Network Status            $IsOffline" -t;
+    uiml " 4. Update Local Script file if new version available              "; uimi "IPv4 Address:             $IPv4" -t;
+    uiml " 5. Update Network Status                                          "; uimi "`n"
+    uiml "                                                                   "; uimt " Script Information`n" -t
     uimt "                                                                   "; uimt "======================================`n"
-    uimi "A) Admin Mode                                                      " -s; uimi "Current Script Version:   $($Script:CurrentVersion.ToString())"
-    uimi "N) Update Network Status                                           " -s; uimi "Current Script GIT rev    $CurrentGitRev"
-    uimi "X) Exit                                                            " -s; uimi "Latest Script Version     $LatestScriptVersion"
-    uiml "                                                                   "; uimi "Latest Script GIT rev        $LatestScriptRevision"
+    uimi "A) Admin Mode                                                      " -s; uimi "Current Script Version:   $Script:CurrentVersion"
+    uimi "N) Update Network Status                                           " -s; uimi "Current Script GIT rev    $Script:CurrentGitRev"
+    uimi "X) Exit                                                            " -s; uimi "Latest Script Version     $Script:LatestVersion"
+    uiml "                                                                   "; uimi "Latest Script GIT rev        $Script:LatestGitRevision"
    
 }
 #//====================================================================================//
