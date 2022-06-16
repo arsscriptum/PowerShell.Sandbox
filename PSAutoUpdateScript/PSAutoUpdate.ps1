@@ -51,7 +51,7 @@ $Script:Debug = $false
 # Gather System Info
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
-[string]$Script:CurrentVersionString = "1.0.0.1"
+[string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
 if($Script:Debug){
     [string]$Script:CurrentVersionString = "1.0.0.1"
 }
