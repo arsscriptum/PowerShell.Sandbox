@@ -5,132 +5,84 @@
 #>
 
 
-function uimi{
+function Get-NetworkStatus{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message,
         [Parameter(Mandatory=$false)]
-        [Alias('t')]
-        [switch]$Title,
-        [Parameter(Mandatory=$false)]
-        [Alias('s')]
-        [switch]$SysOptions
+        [switch]$Quick
     ) 
-    if($Title){
-        Write-Host -f Gray "$Message"    
-    }elseif($SysOptions){
-        Write-Host -n -f Red "$Message"
-    }else{
-
-        Write-Host -f Cyan "$Message"
+    # Method 1, retarded
+    if($Quick){
+        try{
+            $Connected =  Test-Connection -TargetName 'github.com' -ErrorAction Ignore -Quiet -IPv4 -Count 1
+            return $Connected
+        }catch{
+            return $False
+        }   
     }
-    
-}
 
-function uimt{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message,
-        [Parameter(Mandatory=$false)]
-        [Alias('t')]
-        [switch]$Title
-    ) 
-    if($Title){
-        Write-Host -n -f DarkRed "$Message"    
-    }else{
-        Write-Host -n -f DarkYellow "$Message"
+     # Method 2
+    $ReceivedStatus = 0
+    $InitialDelay = 1500
+    While($ReceivedStatus -eq 0){
+        Write-Verbose "Start Job -- Test-Connection -TargetName `"github.com`""
+        try{
+            $job = Start-Job -ScriptBlock { Test-Connection -TargetName 'github.com' -EA Stop }
+        }catch{
+            return $False
+        }
+        
+        Write-Verbose "Waiting for $InitialDelay ms"
+        Start-Sleep -Milliseconds $InitialDelay
+        $NetStatus = (Receive-Job $job).Status
+        $ReceivedStatus = $NetStatus.Count
+        Write-Verbose "NetStatus: $NetStatus"
+        Write-Verbose "ReceivedStatus $ReceivedStatus"
+
+        if($ReceivedStatus -gt 0) { 
+            $NetStatusTruncated = $NetStatus[0] 
+            if(($NetStatusTruncated -eq 'Success') -Or ($NetStatusTruncated -eq 'Failed') ) { 
+                break; 
+            }else{
+                $InitialDelay += 1000
+                Write-Verbose "Will try again with InitialDelay: $InitialDelay"
+                $ReceivedStatus = 0
+            } 
+        }else{
+            $InitialDelay += 1000
+            Write-Verbose "Will try again with InitialDelay: $InitialDelay"
+            $ReceivedStatus  = 0
+        }
     }
-    
+        
+    $NetStatusTruncated = $NetStatus[0]
+    Write-Verbose "NetStatusTruncated :  $NetStatusTruncated"
+    if($NetStatusTruncated -eq 'Success'){
+        return $True
+    }
+    return $False
+
 }
 
 
 function Update-NetworkStatus{
     [CmdletBinding(SupportsShouldProcess)]
+    
     param(
-
+        [Parameter(Mandatory=$false)]
+        [switch]$Quick
     ) 
+    if($Quick){
+        $Script:IsOnline = Get-NetworkStatus -Quick 
+    }else{
         Clear-Host
         Write-Host -f DarkRed  "`tPLEASE WAIT - UPDATING NETWORK STATUS"
         Write-Host -f DarkYellow  "`t==================================`n`n"
-        $Script:IsOnline = (Test-NetConnection -ComputerName 'github.com')
-        Start-Sleep 2
-    
-
+        $Script:IsOnline = Get-NetworkStatus
+    }   
 }
 
 
-function uiml{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$true,Position=0)]
-        [string]$Message
-    ) 
-
-    Write-Host -n -f White "$Message"
-}
-
-$Script:NetConnectionVerbosity = 'Quiet'
-Remove-Alias -Name 'Test-NetConnection' -ErrorAction Ignore
-function Test-CustomNetConnection {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$false)]
-        [string]$ComputerName = 'localhost',
-
-        [Parameter(Mandatory=$false)]
-        [string]$InformationLevel = 'Quiet'
-    )
-
-    $f = Get-Command -Name 'Test-NetConnection' -CommandType Function
-    & $f -ComputerName $ComputerName -InformationLevel 'Quiet'
-}
-
-New-Alias -Name 'Test-NetConnection' -Value 'Test-CustomNetConnection' -ErrorAction Ignore
-
-
-function Update-AllVersionValues{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory=$false)]
-        [switch]$CurrentVersionUpdate,
-        [Parameter(Mandatory=$false)]
-        [switch]$LatestVersionUpdate,
-        [Parameter(Mandatory=$false)]
-        [switch]$CheckOnline
-    ) 
-
-
-    [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
-    if($Script:CurrentVersionString -eq '__CURRENT_VERSION_STRING__'){
-        [string]$Script:CurrentVersionString = $Script:DEFAULT_VERSION
-    }
-    
-
-    if ( ($PSBoundParameters.ContainsKey('CurrentVersionUpdate')) -And ($CurrentVersionUpdate -ne $Null) -And   ($CurrentVersionUpdate -ne '')){ 
-        #Write-Host -n -f Cyan "[Update-AllVersionValues] "
-        #Write-Host "CurrentVersionUpdate ==> $CurrentVersionUpdate"
-        $Script:CurrentVersionString = $CurrentVersionUpdate
-    }
-    if ( ($PSBoundParameters.ContainsKey('LatestVersionUpdate')) -And ($LatestVersionUpdate -ne $Null) -And   ($LatestVersionUpdate -ne '')){ 
-        #Write-Host -n -f Cyan "[Update-AllVersionValues] "
-        #Write-Host "LatestVersionUpdate ==> $LatestVersionUpdate"
-        $Script:LatestScriptVersionString = $LatestVersionUpdate
-    }
-
-    if($CheckOnline){
-        [string]$Script:LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
-    }
-    [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
-    [string]$script:LatestScriptRevision = $Script:LatestScriptVersionString
-
-    #Write-Host -n -f Yellow "[Update-AllVersionValues] "
-    #Write-Host "CurrentVersion ==> $Script:CurrentVersion"
-
-    #Write-Host -n -f Yellow "[Update-AllVersionValues] "
-    #Write-Host "LatestScriptRevision ==> $Script:LatestScriptRevision"
-}
 
 
 function Get-OnlineFileNoCache{
@@ -232,3 +184,122 @@ function Get-OnlineStringNoCache{
     Write-Verbose "NetGetStringNoCache: Requesting $RequestUrl"
     $client.DownloadString($RequestUrl)
 }
+
+
+
+
+function Get-CurrentScriptVersion{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+    ) 
+   
+    [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
+    $Current = $Script:CurrentVersion.ToString()
+
+    #===============================================================================
+    # Show our data in the menu...
+    #===============================================================================
+    Write-Host -f DarkYellow "`tCURRENT VERSION INFORMATION"; Write-Host -f DarkRed "`t===============================`n";
+    Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$Current";
+    Write-Host -n -f DarkYellow "`tVersion String`t`t"; Write-Host -f DarkRed "$Script:CurrentVersionString`n`n";
+
+    Read-Host -Prompt 'Press any key to return to main menu'
+}
+
+function Get-LatestScriptVersion{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+    ) 
+
+    try{
+        [string]$Script:LatestVersionString         = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
+    }catch{
+        Write-Warning "Error while fetching latest version Id on server. Using UNKNOWN_VERSION $script:UNKNOWN_VERSION"
+        [string]$Script:LatestVersionString = $script:UNKNOWN_VERSION
+        [string]$Script:LatestVersion = $Script:LatestVersionString
+    }
+    
+    [Version]$Script:LatestVersion              = $Script:LatestVersionString
+
+
+    #===============================================================================
+    # Show our data in the menu...
+    #===============================================================================
+    Write-Host -f DarkYellow "`tLATEST VERSION INFORMATION"; Write-Host -f DarkRed "`t===============================`n";
+    Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$Current";
+    Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersionString";
+    Write-Host -n -f DarkYellow "`tLatest Object`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
+
+
+    Read-Host -Prompt 'Press any key to return to main menu'
+}
+
+
+function Update-ScriptVersion{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+    ) 
+    [string]$Script:LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
+    [Version]$Script:LatestVersion = $Script:LatestVersionString
+    if($Script:CurrentVersion -lt $Script:LatestVersion){
+        Write-Host -f DarkYellow "`t VERSION UPDATE"; Write-Host -f DarkRed "`t===============================`n";
+        Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$CurrentVersion";
+        Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
+        Write-Host -n -f DarkYellow "`tLocal Script Path`t`t"; Write-Host -f DarkRed "$Script:ScriptFile`n";
+        Write-Host -n -f DarkGray "Backup Current Script. $Script:ScriptFile to $Script:BackupFile   "
+        Copy-Item $Script:ScriptFile $Script:BackupFile
+        Write-Host -f DarkGreen "Done";
+        Write-Host -n -f DarkGray "Download Latest...   "
+        Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
+        Write-Host -f DarkGreen "Done";
+        Write-Host -n -f DarkGray "Update Version String in script...   "
+        $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
+        $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
+        Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
+        Write-Host -f DarkGreen "Done";
+
+        if($Script:Debug){
+            Read-Host -Prompt 'Press any key to check diffs'
+            &"C:\Programs\Shims\Compare.exe" "$Script:BackupFile" "$Script:TmpScriptFile"
+        }
+
+        Read-Host -Prompt 'Press any key to reload script'
+        Copy-Item $Script:TmpScriptFile $Script:ScriptFile
+  
+        $PwshExe = (Get-Command 'pwsh.exe').Source
+        Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
+        Start-Sleep 3
+        Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`""
+
+    }else{
+        Write-Host "No Update Required"
+    }
+}
+
+function Get-AllPreviousVersion{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+       
+    ) 
+    Clear-Host
+    Write-Host -f DarkRed  "`tGIT REVISIONS"
+    Write-Host -f DarkYellow  "`t===============`n`n"
+    $val = git log --oneline
+    $val
+    Read-Host -Prompt 'Press any key to go back'
+}
+
+function Start-Admin{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+    ) 
+
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+        $PwshExe = (Get-Command 'pwsh.exe').Source
+        Write-Host -f DarkYellow "`n$PwshExe -NoProfile -File `"$PSCommandPath`"`n`n"
+        Start-Sleep 3
+        Start-Process $PwshExe -ArgumentList "-NoProfile -File `"$PSCommandPath`"" -Verb RunAs
+        Exit
+    }
+}
+
