@@ -46,13 +46,13 @@
 
 $Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 $Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
-$Script:Debug = $false
+$Script:Debug = $true
 
 # Gather System Info
 #/======================================================================================/
 Write-Host "Loading system information. Please wait . . ."
 [string]$Script:CurrentVersionString = "__CURRENT_VERSION_STRING__"
-if($Script:Debug){
+if($Script:CurrentVersionString -eq "__CURRENT_VERSION_STRING__"){
     [string]$Script:CurrentVersionString = "1.0.0.1"
 }
 [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
