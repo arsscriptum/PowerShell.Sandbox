@@ -242,21 +242,15 @@ function Update-ScriptVersion{
     [string]$Script:LatestVersionString = Get-OnlineStringNoCache $Script:OnlineVersionFileUrl
     [Version]$Script:LatestVersion = $Script:LatestVersionString
     if($Script:CurrentVersion -lt $Script:LatestVersion){
-        Write-Host -f DarkYellow "`t VERSION UPDATE"; Write-Host -f DarkRed "`t===============================`n";
-        Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$CurrentVersion";
-        Write-Host -n -f DarkYellow "`tLatest Version`t`t"; Write-Host -f DarkRed "$Script:LatestVersion";
-        Write-Host -n -f DarkYellow "`tLocal Script Path`t`t"; Write-Host -f DarkRed "$Script:ScriptFile`n";
-        Write-Host -n -f DarkGray "Backup Current Script. $Script:ScriptFile to $Script:BackupFile   "
+        Write-Host -f DarkYellow "`t NEW SCRIPT VERSION AVAILABLE!"; Write-Host -f DarkRed "`t===============================`n";
+        
         Copy-Item $Script:ScriptFile $Script:BackupFile
-        Write-Host -f DarkGreen "Done";
-        Write-Host -n -f DarkGray "Download Latest...   "
-        Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:TmpScriptFile
-        Write-Host -f DarkGreen "Done";
-        Write-Host -n -f DarkGray "Update Version String in script...   "
-        $Script:FileContent = (Get-Content -Path $Script:TmpScriptFile -Encoding "windows-1251" -Raw)
-        $Script:FileContent = $Script:FileContent -replace "CurrentVersionString = `"__CURRENT_VERSION_STRING__`"", "CurrentVersionString = `"$Script:LatestVersionString`"" 
-        Set-Content -Path $Script:TmpScriptFile -Value $Script:FileContent -Encoding "windows-1251" 
-        Write-Host -f DarkGreen "Done";
+        
+        Get-OnlineFileNoCache $Script:OnlineScriptFileUrl $Script:ScriptFile
+        Write-Host "✅ Updated Script $Script:ScriptFile"
+        
+        Get-OnlineFileNoCache $Script:OnlineVersionFileUrl $Script:VersionFile
+        Write-Host "✅ Updated Version File"
 
         if($Script:Debug){
             Read-Host -Prompt 'Press any key to check diffs'
