@@ -29,14 +29,25 @@ function Get-CurrentScriptVersion{
     [CmdletBinding(SupportsShouldProcess)]
     param() 
    
-    [Version]$Script:CurrentVersion =  $Script:CurrentVersionString
-    $Current = $Script:CurrentVersion.ToString()
+
+
+    [string]$Script:CurrentVersionString = Get-Content -Path $Script:VersionFile
+    try{
+        [string]$Script:CurrentVersion = $Script:CurrentVersionString
+    }catch{
+        Write-Warning "Version Error: $Script:CurrentVersionString in file $Script:VersionFile. Using DEFAULT $script:DEFAULT_VERSION"
+        [string]$Script:CurrentVersionString = $script:DEFAULT_VERSION
+        [string]$Script:CurrentVersion = $Script:CurrentVersionString
+    }
+
+    
 
     #===============================================================================
     # Show our data in the menu...
     #===============================================================================
     Write-Host -f DarkYellow "`tCURRENT VERSION INFORMATION"; Write-Host -f DarkRed "`t===============================`n";
-    Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$Current";
+    Write-Host "✅ Current Version detection: $Script:CurrentVersionString"
+    Write-Host -n -f DarkYellow "`tCurrent Version`t`t"; Write-Host -f DarkRed "$Script:CurrentVersion";
     Write-Host -n -f DarkYellow "`tVersion String`t`t"; Write-Host -f DarkRed "$Script:CurrentVersionString`n`n";
 
     Read-Host -Prompt 'Press any key to return to main menu'
