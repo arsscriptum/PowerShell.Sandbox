@@ -90,11 +90,12 @@ if($DisableTestMode){
 if($Script:TestMode){
     [string]$Script:VersionFile                 = Join-Path $Script:RootPath 'test/TestVersion.nfo'
     [string]$Script:TestVersionFile             = Join-Path $Script:RootPath 'test/TestVersion.nfo'
-    if(-not(Test-Path $Script:TestVersionFile -PathType Leaf)){
-        $Null = New-Item -Path $Script:TestVersionFile -ItemType 'File' -Force -ErrorAction Ignore
-        Set-Content -Path $Script:TestVersionFile -Value $Script:DEFAULT_VERSION
-    }
     
+    $Null = Remove-Item -Path $Script:TestVersionFile -Force -ErrorAction Ignore
+    $Null = New-Item -Path $Script:TestVersionFile -ItemType 'File' -Force -ErrorAction Ignore
+    Set-Content -Path $Script:TestVersionFile -Value $Script:DEFAULT_VERSION
+    
+    Write-Verbose "TestMode : Re-Create version file $Script:TestVersionFile with version $Script:DEFAULT_VERSION"
 }
 
 [string]$script:HostName                        = $ENV:COMPUTERNAME
@@ -121,7 +122,9 @@ $Dependencies = @($Script:DepsFile,$Script:UiFile,$Script:VersionFile)
 
 [string]$Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 [string]$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
-
+if($Script:TestMode){
+    [string]$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/test/PSAutoUpdate.ps1'
+}
 
 
 Write-Host "Loading system information. Please wait . . ."
