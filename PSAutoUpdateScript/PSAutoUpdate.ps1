@@ -41,9 +41,37 @@
         [Alias('a')]
         [switch]$AutoCheck,
         [Parameter(Mandatory=$false)]
-        [switch]$SetupTest
+        [switch]$EnableTestMode,
+        [Parameter(Mandatory=$false)]
+        [switch]$DisableTestMode,
+        [Parameter(Mandatory=$false)]
+        [switch]$DebugMode
     )  
 
+
+
+################################################################################################
+# ON LOAD I Get the TEST MODE and DEBUG MODE STATUS
+################################################################################################
+[Boolean]$Script:Debug                          = $False
+if($DebugMode){
+    [Boolean]$Script:Debug = $True
+}
+Set-Variable -Name 'PSAutoUpdateDEBUGMODE' -Value $Script:Debug -Scope Global -Option AllScope -Visibility Public -Force -ErrorAction Ignore  
+if($DisableTestMode){
+    $Script:TestMode = $False
+   Set-Variable -Name 'PSAutoUpdateTESTMODE' -Value $False -Scope Global -Option AllScope -Visibility Public -Force -ErrorAction Ignore  
+}elseif($EnableTestMode){
+    $Script:TestMode = $True
+   Set-Variable -Name 'PSAutoUpdateTESTMODE' -Value $True -Scope Global -Option AllScope -Visibility Public -Force -ErrorAction Ignore  
+}else{
+    $TmpValue = Get-Variable -Name 'PSAutoUpdateTESTMODE' -ValueOnly -ErrorAction Ignore
+    if($TmpValue -eq $Null){
+        [Boolean]$Script:TestMode                       = $False
+    }else{
+        [Boolean]$Script:TestMode = $TmpValue
+    } 
+}
 
 
 ################################################################################################
@@ -55,6 +83,13 @@
 [string]$Script:BackupFile                      = Join-Path $ENV:TEMP 'Backup.ps1'
 [string]$Script:TmpScriptFile                   = Join-Path $ENV:TEMP 'PSAutoUpdate.ps1'
 [string]$Script:VersionFile                     = Join-Path $Script:RootPath 'Version.nfo'
+[string]$Script:TestVersionFile                 = Join-Path $Script:RootPath 'test/TestVersion.nfo'
+# IMPORTANT : When runnig in TEST MODE, the version filename is overridden so that the test version 
+# is used instead, without changing thecode
+if($Script:TestMode){
+    [string]$Script:VersionFile                 = Join-Path $Script:RootPath 'test/TestVersion.nfo'
+    [string]$Script:TestVersionFile             = Join-Path $Script:RootPath 'test/TestVersion.nfo'
+}
 
 [string]$script:HostName                        = $ENV:COMPUTERNAME
 [string]$script:IsAdmin                         = $False
@@ -82,7 +117,7 @@ $Dependencies = @($Script:DepsFile,$Script:UiFile,$Script:VersionFile)
 [string]$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
 
 
-$Script:Debug = $false
+
 Write-Host "Loading system information. Please wait . . ."
 
 
@@ -151,10 +186,23 @@ $Script:IsOnline = Get-NetworkStatus -Quick
 Write-Host "✅ Updating Network Status"
 
 
-if($SetupTest){
+Write-Host "Development Setting: DEBUG: "
+Write-Host "✅ Updating Network Status"
+
+
+
+Write-Host -n -f Yellow "Development Setting: DEBUG: "
+if($Script:Debug){ Write-Host -f Red "ENABLED" ; }else { Write-Host -f DarkGreen "DISABLED" ; }
+Write-Host  -n -f Yellow "Development Setting: TEST : "
+if($Script:TestMode){ Write-Host -f Red "ENABLED" ; }else { Write-Host -f DarkGreen "DISABLED" ; }
+
+Start-Sleep 4
+
+
+if($EnableTestMode){
     Clear-Host
     Write-Host -n -f DarkCyan "[SETUP TEST] " ; Write-Host " Setting current script version to $Script:DEFAULT_VERSION."
-    Set-Content -Path $Script:VersionFile -Value $Script:DEFAULT_VERSION
+    Set-Content -Path $Script:TestVersionFile -Value $Script:DEFAULT_VERSION
     Write-Host -n -f DarkCyan "[SETUP TEST] " ; Write-Host " Start the script with no argument to test the local vs remote version detection"
     Write-Host -n -f DarkCyan "[SETUP TEST] " ; Write-Host " USAGE INFORMATION"
     Write-Host "No arguments`n`t$PSCommandPath (Use the menu)"
