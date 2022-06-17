@@ -262,17 +262,24 @@ function Get-NumberInAscii{
 # run the Updated script, you can validate the code is OK
 #
 #####################################################################
-function Invoke-Script{
+function Invoke-OriginalScript{
     [CmdletBinding(SupportsShouldProcess)]
     param(
     ) 
 
     Clear-Host
     
-    $t = @"
+    $t = "
   _
 
 
+░█▀▀▀█ ░█▀▀█ ▀█▀ ░█▀▀█ ▀█▀ ░█▄─░█ ─█▀▀█ ░█─── 　 ░█▀▀▀█ ░█▀▀█ ░█▀▀█ ▀█▀ ░█▀▀█ ▀▀█▀▀ 
+░█──░█ ░█▄▄▀ ░█─ ░█─▄▄ ░█─ ░█░█░█ ░█▄▄█ ░█─── 　 ─▀▀▀▄▄ ░█─── ░█▄▄▀ ░█─ ░█▄▄█ ─░█── 
+░█▄▄▄█ ░█─░█ ▄█▄ ░█▄▄█ ▄█▄ ░█──▀█ ░█─░█ ░█▄▄█ 　 ░█▄▄▄█ ░█▄▄█ ░█─░█ ▄█▄ ░█─── ─░█──
+
+"
+
+    $t2 = @"
 
 ░█▀▀█ ░█▀▀▀█ 　 ─█▀▀█ ░█─░█ ▀▀█▀▀ ░█▀▀▀█ 　 ░█─░█ ░█▀▀█ ░█▀▀▄ ─█▀▀█ ▀▀█▀▀ ░█▀▀▀ 　 ░█▀▀▄ ░█▀▀▀ ░█▀▄▀█ ░█▀▀▀█ 
 ░█▄▄█ ─▀▀▀▄▄ 　 ░█▄▄█ ░█─░█ ─░█── ░█──░█ 　 ░█─░█ ░█▄▄█ ░█─░█ ░█▄▄█ ─░█── ░█▀▀▀ 　 ░█─░█ ░█▀▀▀ ░█░█░█ ░█──░█ 
@@ -286,6 +293,8 @@ function Invoke-Script{
                                                    
 "@
 
+
+    
     for ($i=0;$i -lt $t.length;$i++) {
     if ($i%2) {
          $c = "red"
@@ -303,12 +312,109 @@ function Invoke-Script{
     
     }
 
+    write-host $t2 -f Blue
     Start-Sleep 5
 
-    Invoke-SlidingMessage "THIS SCRIPT VERSION IS $Script:CurrentVersionString"
+    Invoke-SlidingMessage "THIS IS THE ORIGINAL SCRIPT. IF YOU UPDATE THE VERSION, YOU WILL GET A DIFFERENT OUTPUT. $Script:CurrentVersionString"
     Read-Host -Prompt 'Press any key to return to main menu'
 }
 
+function New-Script{
+    $Image = '
+  888888888888888888888
+  s 88 ooooooooooooooo 88     s 888888888888888888888888888888888888888
+  S 88 888888888888888 88    SS 888888888888888888888888888888888888888
+ SS 88 888888888888888 88   SSS 8888                         - --+ 8888
+ SS 88 ooooooooooooooo 88  sSSS 8888           o8888888o         | 8888
+sSS 88 888888888888888 88 SSSSS 8888         o88888888888o         8888
+SSS 88 888888888888888 88 SSSSS 8888        8888 88888 8888      | 8888
+SSS 88 ooooooooooooooo 88 SSSSS 8888       o888   888   888o       8888
+SSS 88 888888888888888 88 SSSSS 8888       8888   888   8888       8888
+SSS 88 888888888888888 88 SSSSS 8888       8888   888   8888       8888
+SSS 88 oooooooooo      88 SSSSS 8888       8888o o888o o8888       8888
+SSS 88 8888888888 .::. 88 SSSSS 8888       988 8o88888o8 88P       8888
+SSS 88 oooooooooo :::: 88 SSSSS 8888        8oo 9888889 oo8        8888
+SSS 88 8888888888  ``  88 SSSSS 8888         988o     o88P         8888
+SSS 88ooooooooooooooooo88  SSSS 8888           98888888P           8888
+SSS 888888888888888888888__SSSS 8888                               8888_____
+SSS |   *  *  *   )8c8888  SSSS 888888888888888888888888888888888888888
+SSS 888888888888888888888.  SSS 888888888888888888888888888888888888888
+SSS 888888888888888888888 \_ SSsssss oooooooooooooooooooooooooooo ssss
+SSS 888888888888888888888  \\   __SS 88+-8+-88============8-8==88 S
+SSS 888888888888888888888-. \\  \  S 8888888888888888888888888888
+SSS 888888888888888888888  \\\  \\       `.__________.`      ` .
+SSS 88O8O8O8O8O8O8O8O8O88  \\.   \\______________________________`_.
+SSS 88 el cheapo 8O8O8O88 \\  `.  \|________________________________|
+ SS 88O8O8O8O8o8O8O8O8O88  \\   `-.___
+  S 888888888888888888888 /~          ~~~~~-----~~~~---.__
+ .---------------------------------------------------.    ~--.
+ \ \______\ __________________________________________\-------^.-----------.
+ :`  _   _ _ _ _  _ _ _ _  _ _ _ _   _ _ _           `\        \
+ ::\ ,\_\,\_\_\_\_\\_\_\_\_\\_\_\_\_\,\_\_\_\           \      o `8o 8o .
+ |::\  -_-_-_-_-_-_-_-_-_-_-_-_-_-___  -_-_-_   _ _ _ _  \      8o 88 88 \
+ |_::\ ,\_\_\_\_\_\_\_\_\_\_\_\_\_\___\,\_\_\_\,\_\_\_\_\ \      88       \
+    `:\ ,\__\_\_\_\_\_\_\_\_\_\_\_\_\  \,\_\_\_\,\_\_\_\ \ \      88       .
+     `:\ ,\__\_\_\_\_\_\_\_\_\_\_\_\____\    _   ,\_\_\_\_\ \      88o    .|
+       :\ ,\____\_\_\_\_\_\_\_\_\_\_\____\  ,\_\ _,\_\_\_\ \ \      `ooooo`
+        :\ ,\__\\__\_______________\__\\__\,\_\_\_\,\___\_\_\ \
+         `\  --  -- --------------- --  --   - - -   --- - -   )____________
+           `--------------------------------------------------`
+
+'
+    Write-Host $Image -f DarkRed
+
+
+}
+
+
+Function Get-MissionImpossible {
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(932, 150)
+    Start-Sleep -m 150
+    [console]::beep(1047, 150)
+    Start-Sleep -m 150
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(699, 150)
+    Start-Sleep -m 150
+    [console]::beep(740, 150)
+    Start-Sleep -m 150
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(932, 150)
+    Start-Sleep -m 150
+    [console]::beep(1047, 150)
+    Start-Sleep -m 150
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(784, 150)
+    Start-Sleep -m 300
+    [console]::beep(699, 150)
+    Start-Sleep -m 150
+    [console]::beep(740, 150)
+    Start-Sleep -m 150
+    [console]::beep(932, 150)
+    [console]::beep(784, 150)
+    [console]::beep(587, 1200)
+    Start-Sleep -m 75
+    [console]::beep(932, 150)
+    [console]::beep(784, 150)
+    [console]::beep(554, 1200)
+    Start-Sleep -m 75
+    [console]::beep(932, 150)
+    [console]::beep(784, 150)
+    [console]::beep(523, 1200)
+    Start-Sleep -m 150
+    [console]::beep(466, 150)
+    [console]::beep(523, 150)
+}
 
 function Test-DisplayCurrentVersion {
     [CmdletBinding(SupportsShouldProcess)]
@@ -425,19 +531,17 @@ Function ConvertTo-ASCIIArt {
     )
 
     
+    Write-Verbose "Processing $text with font $Font"
+    $testEncode = [uri]::EscapeDataString($Text)
+    $url = "http://artii.herokuapp.com/make?text=$testEncode&font=$Font"
+    Try {
+        Invoke-Restmethod -Uri $url -DisableKeepAlive -ErrorAction Stop
+    }
+    Catch {
+        Show-ExceptionDetails $_ -ShowStack
+    }
 
-        Write-Verbose "[$((Get-Date).TimeofDay) PROCESS] Processing $text with font $Font"
-        $testEncode = [uri]::EscapeDataString($Text)
-        $url = "http://artii.herokuapp.com/make?text=$testEncode&font=$Font"
-        Try {
-            Invoke-Restmethod -Uri $url -DisableKeepAlive -ErrorAction Stop
-        }
-        Catch {
-            Show-ExceptionDetails $_ -ShowStack
-        }
-    } #process
-    
-    
+
 }
 
 function Update-AllVersionValues{

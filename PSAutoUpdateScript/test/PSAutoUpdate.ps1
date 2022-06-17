@@ -262,13 +262,29 @@ if($AutoCheck){
             Request-OnlineState
             continue
         }
+        
         Show-Menu
+
+        Write-Host "🆈🅾🆄 🅳🅸🅳 🅸🆃 🅱🆄🅳🅳🆈. 🆃🅷🅸🆂 🅸🆂 🆄🅿🅳🅰🆃🅴🅳 🆂🅲🆁🅸🅿🆃"
+        
+
+        $Banner = '
+    ___       _   _________       __   _____ __________  ________  ______   _    ____________  _____ ________  _   __
+   /   |     / | / / ____/ |     / /  / ___// ____/ __ \/  _/ __ \/_  __/  | |  / / ____/ __ \/ ___//  _/ __ \/ | / /
+  / /| |    /  |/ / __/  | | /| / /   \__ \/ /   / /_/ // // /_/ / / /     | | / / __/ / /_/ /\__ \ / // / / /  |/ / 
+ / ___ |   / /|  / /___  | |/ |/ /   ___/ / /___/ _, _// // ____/ / /      | |/ / /___/ _, _/___/ // // /_/ / /|  /  
+/_/  |_|  /_/ |_/_____/  |__/|__/   /____/\____/_/ |_/___/_/     /_/       |___/_____/_/ |_|/____/___/\____/_/ |_/   
+
+'
+        Set-DisplayColoredText $Banner
+        Invoke-SlidingMessage " THIS SCRIPT WAS RECENTLY UPDATED TO THE LATEST VERSION $Script:LatestVersionString"
+
         $Option = Read-Host -Prompt 'Please select an option'
         switch ($Option)
         {
             0 {Invoke-Hidden}
-            # In the updated script version, this line calls Invoke-UpdatedScript
-            1 {Invoke-OriginalScript}
+            
+            1 {Invoke-UpdatedScript}
             2 {Get-CurrentScriptVersion}
             3 {Get-LatestScriptVersion}
             4 {Update-ScriptVersion}
