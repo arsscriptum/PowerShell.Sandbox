@@ -5,32 +5,16 @@
 #̷𝓍   🇵​​​​​🇴​​​​​🇼​​​​​🇪​​​​​🇷​​​​​🇸​​​​​🇭​​​​​🇪​​​​​🇱​​​​​🇱​​​​​ 🇸​​​​​🇨​​​​​🇷​​​​​🇮​​​​​🇵​​​​​🇹​​​​​ 🇧​​​​​🇾​​​​​ 🇬​​​​​🇺​​​​​🇮​​​​​🇱​​​​​🇱​​​​​🇦​​​​​🇺​​​​​🇲​​​​​🇪​​​​​🇵​​​​​🇱​​​​​🇦​​​​​🇳​​​​​🇹​​​​​🇪​​​​​.🇶​​​​​🇨​​​​​@🇬​​​​​🇲​​​​​🇦​​​​​🇮​​​​​🇱​​​​​.🇨​​​​​🇴​​​​​🇲​​​​​
 #>
 
-[string]$Script:TestModeNotification1 = '
-
-████████╗███████╗░██████╗████████╗  ███╗░░░███╗░█████╗░██████╗░███████╗
-╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝  ████╗░████║██╔══██╗██╔══██╗██╔════╝
-░░░██║░░░█████╗░░╚█████╗░░░░██║░░░  ██╔████╔██║██║░░██║██║░░██║█████╗░░
-░░░██║░░░██╔══╝░░░╚═══██╗░░░██║░░░  ██║╚██╔╝██║██║░░██║██║░░██║██╔══╝░░
-░░░██║░░░███████╗██████╔╝░░░██║░░░  ██║░╚═╝░██║╚█████╔╝██████╔╝███████╗
-░░░╚═╝░░░╚══════╝╚═════╝░░░░╚═╝░░░  ╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚══════╝
-
-'
 
 
-[string]$Script:DebugModeNotification = '
-░█▀▀▄ █▀▀ █▀▀▄ █──█ █▀▀▀ 　 ░█▀▄▀█ █▀▀█ █▀▀▄ █▀▀ 
-░█─░█ █▀▀ █▀▀▄ █──█ █─▀█ 　 ░█░█░█ █──█ █──█ █▀▀ 
-░█▄▄▀ ▀▀▀ ▀▀▀─ ─▀▀▀ ▀▀▀▀ 　 ░█──░█ ▀▀▀▀ ▀▀▀─ ▀▀▀
-'
+#==============================================================================================================================================================
+#                                             -------------- THIS FILE CONTAINS FUNCTIONS THAT ARE RELATED TO THE UI --------------
+#==============================================================================================================================================================
 
 
-[string]$Script:TestModeNotification = '
-
-▀▀█▀▀ █▀▀ █▀▀ ▀▀█▀▀ 　 ▒█▀▄▀█ █▀▀█ █▀▀▄ █▀▀ 
-░▒█░░ █▀▀ ▀▀█ ░░█░░ 　 ▒█▒█▒█ █░░█ █░░█ █▀▀ 
-░▒█░░ ▀▀▀ ▀▀▀ ░░▀░░ 　 ▒█░░▒█ ▀▀▀▀ ▀▀▀░ ▀▀▀
-'
-
+#####################################################################
+# MENU WRITER FUNCTIONS : uimi, uimt, uiml
+#####################################################################
 
 function uimi{
     [CmdletBinding(SupportsShouldProcess)]
@@ -130,6 +114,16 @@ function Show-End
 }
 #//====================================================================================//
 
+
+
+
+#####################################################################
+#
+# NETWORK -- LOOP UNTIL ONLINE
+#
+# This function is used to loop in the menu until we are ONLINE
+#
+#####################################################################
 function Request-OnlineState{
     
     if($Script:IsOnline -eq $False){
@@ -148,6 +142,11 @@ function Request-OnlineState{
 
 
 
+#####################################################################
+#
+# GUI TEST FUNCTION TO PRINT NUMBERS IN ASCII ART
+#
+#####################################################################
 function Get-NumberInAscii{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -254,6 +253,15 @@ function Get-NumberInAscii{
             return $Ret
 }
 
+
+
+#####################################################################
+#
+# Invoke-Script : Placeholder function that does some stuff.
+# It will print out the script version as well so that when you 
+# run the Updated script, you can validate the code is OK
+#
+#####################################################################
 function Invoke-Script{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -308,9 +316,6 @@ function Test-DisplayCurrentVersion {
       
     ) 
 
-    [Version]$CurrentVersion = "2.1.3.9"
-
-
     $BigVersion = ''
 
     $BigVersion += Get-NumberInAscii $CurrentVersion.Major
@@ -334,14 +339,37 @@ function Invoke-SlidingMessage {
         [Parameter(Mandatory=$False)]
         [int]$TimeToLive=5,
         [Parameter(Mandatory=$false)]
-        [switch]$ClearScreen
+        [switch]$ClearScreen,
+        [Parameter(Mandatory=$false)]
+        [array]$OverrideTextPosition
     ) 
 
     
+    # Get the position of the Cursor on the screen and move it
+    $Position=$HOST.UI.RawUI.CursorPosition
+
+    $ValueCount = $OverrideTextPosition.Count
+    if(($OverrideTextPosition -ne $Null) -And ($ValueCount -eq 2) ) {
+        Write-Verbose "Invoke-SlidingMessage -- OverrideTextPosition was specified, with those values: ValueX $ValueX . ValueY $ValueY"
+        $ValueX = $OverrideTextPosition[0]
+        $ValueY = $OverrideTextPosition[1]
+
+        $Position.X=$ValueX
+        $Position.Y=$ValueY
+    }else{
+        $ValueX = $Position.X
+        $ValueY = $Position.Y
+        Write-Verbose "Invoke-SlidingMessage -- OverrideTextPosition was NOT specified, using current position. ValueX $ValueX . ValueY $ValueY"
+    }
+    
+    
     # Clear the console of rubbish
     if($ClearScreen){
+        Write-Verbose "Invoke-SlidingMessage -- ClearScreen"
         cls
     }
+
+    Write-Verbose "Invoke-SlidingMessage -- TimeToLive Set to $TimeToLive"
 
     # Are how much information the user keyed in
     $length=$text.Length
@@ -351,10 +379,6 @@ function Invoke-SlidingMessage {
     $End=$Length
     $zerocharacters=0
 
-    # Get the position of the Cursor on the screen and move it
-    $Position=$HOST.UI.RawUI.CursorPosition
-    $Position.X=4
-    $Position.Y=5
 
     $StartSecs = Get-Date -UFormat %s
     $CurrSecs  = $StartSecs 
@@ -362,7 +386,6 @@ function Invoke-SlidingMessage {
     do {
         $CurrSecs = Get-Date -UFormat %s
         $ElapsedSecs = $CurrSecs - $StartSecs
-
 
         if($ElapsedSecs -gt $TimeToLive) {  return }
         foreach ($count in $start .. $end) {
@@ -401,11 +424,8 @@ Function ConvertTo-ASCIIArt {
         [string]$Font = "big"
     )
 
-    Begin {
-        Write-Verbose "[$((Get-Date).TimeofDay) BEGIN] Starting $($myinvocation.mycommand)"
-    } #begin
+    
 
-    Process {
         Write-Verbose "[$((Get-Date).TimeofDay) PROCESS] Processing $text with font $Font"
         $testEncode = [uri]::EscapeDataString($Text)
         $url = "http://artii.herokuapp.com/make?text=$testEncode&font=$Font"
@@ -413,12 +433,11 @@ Function ConvertTo-ASCIIArt {
             Invoke-Restmethod -Uri $url -DisableKeepAlive -ErrorAction Stop
         }
         Catch {
-            Throw $_
+            Show-ExceptionDetails $_ -ShowStack
         }
     } #process
-    End {
-        Write-Verbose "[$((Get-Date).TimeofDay) END    ] Ending $($myinvocation.mycommand)"
-    } #end
+    
+    
 }
 
 function Update-AllVersionValues{
