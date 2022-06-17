@@ -119,9 +119,12 @@ $Dependencies = @($Script:DepsFile,$Script:UiFile,$Script:VersionFile)
 # IMPORTANT : URL FRO ONLINE VERSION FILE and SCRIPT
 ################################################################################################
 
+
 [string]$Script:OnlineVersionFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/Version.nfo'
 [string]$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/PSAutoUpdate.ps1'
-
+if($Script:TestMode){
+    [string]$Script:OnlineScriptFileUrl = 'https://raw.githubusercontent.com/arsscriptum/PowerShell.Sandbox/main/PSAutoUpdateScript/test/PSAutoUpdate.ps1'
+}
 
 
 Write-Host "Loading system information. Please wait . . ."
@@ -255,7 +258,7 @@ if($AutoCheck){
 #####################################################################
 # MANUAL MODE :  TEST FUNCTIONALITIES USING THE MENU
 #####################################################################
-    
+    $SoundsPlayed = $False
     do
     {
         if($Script:IsOnline -eq $False){
@@ -264,10 +267,13 @@ if($AutoCheck){
         }
         
         Show-Menu
-
-        Write-Host "🆈🅾🆄 🅳🅸🅳 🅸🆃 🅱🆄🅳🅳🆈. 🆃🅷🅸🆂 🅸🆂 🆄🅿🅳🅰🆃🅴🅳 🆂🅲🆁🅸🅿🆃"
-        
-
+        $BannerMI = '
+ _   _  _  __  __  _  _  _  _   _  _   _  ___  _  __  __  _  ___ _    ___ 
+| \_/ || |/ _|/ _|| |/ \| \| | | || \_/ || o \/ \/ _|/ _|| || o ) |  | __|
+| \_/ || |\_ \\_ \| ( o ) \\ | | || \_/ ||  _( o )_ \\_ \| || o \ |_ | _| 
+|_| |_||_||__/|__/|_|\_/|_|\_| |_||_| |_||_|  \_/|__/|__/|_||___/___||___|
+                                                                          
+'
         $Banner = '
     ___       _   _________       __   _____ __________  ________  ______   _    ____________  _____ ________  _   __
    /   |     / | / / ____/ |     / /  / ___// ____/ __ \/  _/ __ \/_  __/  | |  / / ____/ __ \/ ___//  _/ __ \/ | / /
@@ -276,9 +282,21 @@ if($AutoCheck){
 /_/  |_|  /_/ |_/_____/  |__/|__/   /____/\____/_/ |_/___/_/     /_/       |___/_____/_/ |_|/____/___/\____/_/ |_/   
 
 '
-        Set-DisplayColoredText $Banner
-        Invoke-SlidingMessage " THIS SCRIPT WAS RECENTLY UPDATED TO THE LATEST VERSION $Script:LatestVersionString"
+        if($SoundsPlayed -eq $False){
+            $job = $j =  New-MissionImpossibleJob
+            Set-DisplayColoredText $BannerMI
+            $SoundsPlayed = $True
+            
+        }else{
+            Set-DisplayColoredText $Banner
+           
+        }
 
+        $Position=$HOST.UI.RawUI.CursorPosition
+        $ValueX = $Position.X
+        $ValueY = $Position.Y + 3
+        $a = @($ValueX,$ValueY)
+        Invoke-SlidingMessage " THIS SCRIPT WAS RECENTLY UPDATED TO THE LATEST VERSION $Script:LatestVersion" -OverrideTextPosition $a
         $Option = Read-Host -Prompt 'Please select an option'
         switch ($Option)
         {

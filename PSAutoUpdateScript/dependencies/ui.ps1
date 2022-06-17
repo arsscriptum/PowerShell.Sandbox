@@ -162,6 +162,8 @@ function Get-NumberInAscii{
 '}
                 0 {
                         $Ret = '
+
+
 ╭━━━━┳━━━┳━━━┳━━━╮
 ╰━━╮━┃╭━━┫╭━╮┃╭━╮┃
 ╱╱╭╯╭┫╰━━┫╰━╯┃┃╱┃┃
@@ -294,23 +296,7 @@ function Invoke-OriginalScript{
 "@
 
 
-    
-    for ($i=0;$i -lt $t.length;$i++) {
-    if ($i%2) {
-         $c = "red"
-    }
-    elseif ($i%5) {
-     $c = "yellow"
-    }
-    elseif ($i%7) {
-         $c = "green"
-    }
-    else {
-       $c = "white"
-    }
-    write-host $t[$i] -NoNewline -ForegroundColor $c
-    
-    }
+  
 
     write-host $t2 -f Blue
     Start-Sleep 5
@@ -367,7 +353,8 @@ SSS 88 el cheapo 8O8O8O88 \\  `.  \|________________________________|
 }
 
 
-Function Get-MissionImpossible {
+Function New-MissionImpossibleJob {
+    $job = Start-Job -ScriptBlock { 
     [console]::beep(784, 150)
     Start-Sleep -m 300
     [console]::beep(784, 150)
@@ -414,7 +401,37 @@ Function Get-MissionImpossible {
     Start-Sleep -m 150
     [console]::beep(466, 150)
     [console]::beep(523, 150)
+    }
+
+    return $job
 }
+
+function Set-DisplayColoredText {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage="text", Position=0)]
+        [string]$t
+    ) 
+
+    for ($i=0;$i -lt $t.length;$i++) {
+
+        if ($i%2) {
+          $c = "red"
+        }
+        elseif ($i%5) {
+            $c = "yellow"
+        }
+        elseif ($i%7) {
+            $c = "green"
+        }
+        else {
+            $c = "white"
+        }
+
+        write-host $t[$i] -NoNewline -ForegroundColor $c
+    }
+}
+
 
 function Test-DisplayCurrentVersion {
     [CmdletBinding(SupportsShouldProcess)]
