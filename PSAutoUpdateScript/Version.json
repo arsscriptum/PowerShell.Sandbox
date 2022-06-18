@@ -1,0 +1,8 @@
+{
+  "ver": "1.0.0.1",
+  "name": "PSAutoUpdate.ps1",
+  "relpath": ".\\Version.nfo",
+  "algo": "SHA256",
+  "hash": "31C29DB57DFBCF730E968DAF0D0AF854E6BA6DE5288205117B5F87C63C57DAD8",
+  "updated": "2022-06-17T03:45:00"
+}
