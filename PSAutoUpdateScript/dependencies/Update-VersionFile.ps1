@@ -5,20 +5,14 @@
 #>
 
 
-
-
 ######################################################################################################################
 #
-# TOOLS : BELOW, YOU WILL FIND MISC TOOLS RELATED TO THE PSAUTOUPDATE SCRIPT. WHEN IN THE GUI YOU ARE CALLING 
-#         FUNCTION, IT WILL BE ASSOCIATED TO A FUNCTION HERE.
-#
-# FUNCTIONS:  - Get-CurrentScriptVersion
-#             - Get-LatestScriptVersion
-#             - Update-ScriptVersion
+# ScriptVersionData: Representation of a version data object
+# 
+# It can be serialized to and from JSON, CliXml, PureXml.
+# This is how we store version information for a script.
 #
 ######################################################################################################################
-
-
 
 class ScriptVersionData {
         [string]$ver=""
@@ -111,7 +105,7 @@ class ScriptVersionData {
         [void] LoadFromJson( [string]$jsonpath ) {
             $Exists = Test-Path -Path $jsonpath -PathType Leaf -ErrorAction Ignore
             if(-not($Exists)) { throw "no such file" } 
-            $importedJson = [ScriptVersionData]::ConvertFromSerialization((get-content -path $jsonpath | convertfrom-json))
+            $importedJson = (get-content -path $jsonpath | convertfrom-json)
             $importedJson | gm
         }
         [void] LoadTestData(  ) {
@@ -196,7 +190,7 @@ function Update-VersionFile{
         Write-Verbose "ScriptHash     $Script:ScriptHash"
 
 
-        [string]$Script:VersionFile                     = Join-Path $ScriptRoot 'Version.nfo'
+        [string]$Script:VersionFile                     = Join-Path $ScriptRoot 'Version.json'
         $Exists = Test-Path -Path $Script:VersionFile -PathType Leaf -ErrorAction Ignore
 
         
@@ -244,7 +238,8 @@ function Update-VersionFile{
             }else{
                 Write-Verbose "Including version file from $Script:VersionFile"
                 Write-Verbose "================= VERSION FILE DATA ================="
-                . "$Script:VersionFile"
+                $VersionObject  = new-object ScriptVersionData  
+
                 
                 Write-Verbose "D_Version        $Script:D_Version"
                 Write-Verbose "D_FileName       $Script:D_FileName"
@@ -280,7 +275,5 @@ function Update-VersionFile{
                 mylog "New Version Value (auto-incremented)     $Script:NewVersionString "
             } 
         }
-
-        
 }
 
