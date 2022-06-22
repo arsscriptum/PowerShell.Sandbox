@@ -168,6 +168,10 @@ function Update-VersionFile{
         [string]$script:UNKNOWN_VERSION                 = '99.99.99.99'
         [string]$script:DEFAULT_VERSION                 = '1.0.0.0'
 
+
+
+
+\
         [string]$Script:RootPath                        = (Get-Location).Path
         [string]$Script:ScriptFile                      = Join-Path $PSScriptRoot 'Update-VersionFile.ps1'
         
