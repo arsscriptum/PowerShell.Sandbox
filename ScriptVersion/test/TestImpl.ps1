@@ -13,6 +13,58 @@
 #> 
 
 
+
+
+#==============================================================================================================================================================
+#                                             -------------- THIS FILE CONTAINS FUNCTIONS THAT ARE USED BY THE TEST CASE IMPLEMENTATION  --------------
+#==============================================================================================================================================================
+
+
+
+
+
+#===============================================================================
+# Helpers
+#===============================================================================
+
+
+
+function Check-RequiredDefinitions{
+
+    $ObjectDeclared = $true
+    # Validate the declaration of the ScriptVersion object
+    try{
+        # New Select-Object
+        [ScriptVersionData]$Global:ScriptVersionObject = New-Object -TypeName ScriptVersionData -ErrorAction Stop
+
+        if( $Null -eq $verData ){
+            $ObjectDeclared = $false
+        }else{
+
+            $ObjMembers = $verData | gm
+            $Global:ScriptVersionMemberCount = $ObjMembers.Count
+
+            # Set the instanciation time...
+            $Global:ScriptVersionActivationtime = Get-Date -UFormat %s
+
+        }
+    }catch{
+
+        $ObjectDeclared = $false
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
 Function Show-AsciiArt{
 <#
 .SYNOPSIS
@@ -120,7 +172,6 @@ http://www.danielbohannon.com
 
     # Output tool banner after all ASCII art.
     Write-Host ""
-    Write-Host "`tTool    :: Invoke-Obfuscation" -ForegroundColor Magenta
     Write-Host "`tAuthor  :: Daniel Bohannon (DBO)" -ForegroundColor Magenta
     Write-Host "`tTwitter :: @danielhbohannon" -ForegroundColor Magenta
     Write-Host "`tBlog    :: http://danielbohannon.com" -ForegroundColor Magenta
@@ -129,3 +180,38 @@ http://www.danielbohannon.com
     Write-Host "`tLicense :: Apache License, Version 2.0" -ForegroundColor Magenta
     Write-Host "`tNotes   :: If(!`$Caffeinated) {Exit}" -ForegroundColor Magenta
 }
+
+
+function Write-TestLog{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$True,Position=0)]
+        [Alias('m')]
+        [string]$Message,
+        [Parameter(Mandatory=$false)]
+        [switch]$NoTime
+    )  
+   
+    if ($PSBoundParameters.ContainsKey('NoTime')) {
+        Write-Host -n -f DarkRed "[ScriptVersion Test] "
+        Write-Host -f DarkRed "$Message"
+        return
+    }
+
+    $LogMsgTime = Get-Date
+    $FormattedTimeStamp = $LogMsgTime.ToLocalTime().ToString("HH.mm.ss")
+
+    $formatstring = "{0} {1}"
+    $fields = $FormattedTimeStamp,$Message
+    $FormattedMessage = ($formatstring -f $fields)
+    Write-Host -n -f DarkRed "[ScriptVersion Test] "
+    Write-Host -f DarkRed "$FormattedMessage";
+    
+}
+
+
+
+
+Remove-Alias -Name 'syslog' -ErrorAction Ignore | Out-Null
+New-Alias -Name 'syslog' -Value "Write-TestLog" -ErrorAction Ignore -Scope Global | Out-Null

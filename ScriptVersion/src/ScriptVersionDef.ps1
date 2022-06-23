@@ -23,7 +23,7 @@
 ##  Copyright(c) All rights reserved.
 ##===----------------------------------------------------------------------===
  
-class ScriptVersionData {
+class ScriptVersionData  {
         [string]$ver=""
         [string]$name=""
         [string]$relpath=""
@@ -117,28 +117,31 @@ class ScriptVersionData {
             $importedJson = [ScriptVersionData]::ConvertFromSerialization((get-content -path $jsonpath | convertfrom-json))
             $importedJson | gm
         }
-        [void] LoadTestData(  ) {
+        [void] LoadTestData( ) {
             # -- RANDOM FILENAME -- Generate a new file, with a random filename, for testing purposes...
             #    Generate a random filename using the GUID CmdLet
             [string]$NewName = (New-Guid).Guid
             $NewName = $NewName + ".txt"
             [string]$TestFilename = Join-Path "$ENV:TEMP" $NewName
 
-            Write-Verbose "LoadTestData -> Generating file `"$TestFilename`""
+            [string]$logMessage = "LoadTestData -> Generating file `"$TestFilename`""
+            $this.DbgLog($logMessage)
 
             # Now create this new test file: Make sure that the file is not present. Then use New-Item to create the file and the 
             # complete path, if it doesn't Exists..
             $Null = Remove-Item -Path $TestFilename -Recurse -Force -ErrorAction Ignore
             $Null = New-Item -Path $TestFilename -ItemType 'file' -Force -ErrorAction Ignore
-            Write-Verbose "LoadTestData -> Remove and New item on `"$TestFilename`""
-
+            [string]$logMessage = "LoadTestData -> Remove and New item on `"$TestFilename`""
+            $this.DbgLog($logMessage)
 
             # Last step, add some content in this test file...
             $tmpdate = (Get-Date).GetDateTimeFormats()[9]
             $tmpname = $ENV:COMPUTERNAME
             [string]$tmpfilecontent = [string]::Format("`t == SCRIPT VERSION SYSTEM == `n`t ===========================`n`n This file was generated on {0} thinks that {1}!",$tmpdate,$tmpname)
             [int]$tmpcontentlen = $tmpfilecontent.Length
-            Write-Verbose "LoadTestData -> Adding file content. Content lenght $tmpcontentlen."
+            [string]$logMessage = "LoadTestData -> Adding file content. Content lenght $tmpcontentlen."
+            $this.DbgLog($logMessage)
+
 
             $Null = Set-Content -Path $TestFilename -Value $tmpfilecontent
 
