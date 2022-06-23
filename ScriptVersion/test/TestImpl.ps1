@@ -28,6 +28,29 @@
 #===============================================================================
 
 
+function Write-ErrorMessage{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.Management.Automation.ErrorRecord]$Record,
+        [Parameter(Mandatory=$false)]
+        [switch]$ShowStack
+    )       
+    $formatstring = "{0}`n{1}"
+    $fields = $Record.FullyQualifiedErrorId,$Record.Exception.ToString()
+    $ExceptMsg=($formatstring -f $fields)
+    $Stack=$Record.ScriptStackTrace
+    Write-Host "`n[ERROR] -> " -NoNewLine -ForegroundColor DarkRed; 
+    Write-Host "$ExceptMsg`n`n" -ForegroundColor DarkYellow
+    if($ShowStack){
+        Write-Host "--stack begin--" -ForegroundColor DarkGreen
+        Write-Host "$Stack" -ForegroundColor Gray  
+        Write-Host "--stack end--`n" -ForegroundColor DarkGreen       
+    }
+}  
+
+
 
 function Check-RequiredDefinitions{
 
@@ -190,12 +213,22 @@ function Write-TestLog{
         [Alias('m')]
         [string]$Message,
         [Parameter(Mandatory=$false)]
-        [switch]$NoTime
+        [switch]$NoTime,
+        [Parameter(Mandatory=$false)]
+        [Alias('i')]
+        [switch]$Important
     )  
    
+    if ($PSBoundParameters.ContainsKey('Important')) {
+        Write-Host -f DarkYellow "`n`n=====BEGIN====="
+        Write-Host -f Red "$Message"
+        Write-Host -f DarkYellow "=====END=====`n`n"
+        return
+    }    
+
     if ($PSBoundParameters.ContainsKey('NoTime')) {
-        Write-Host -n -f DarkRed "[ScriptVersion Test] "
-        Write-Host -f DarkRed "$Message"
+        Write-Host -n -f DarkCyan "[ScriptVersion Test] "
+        Write-Host -f White "$Message"
         return
     }
 
@@ -205,8 +238,8 @@ function Write-TestLog{
     $formatstring = "{0} {1}"
     $fields = $FormattedTimeStamp,$Message
     $FormattedMessage = ($formatstring -f $fields)
-    Write-Host -n -f DarkRed "[ScriptVersion Test] "
-    Write-Host -f DarkRed "$FormattedMessage";
+    Write-Host -n -f DarkCyan "[ScriptVersion Test] "
+    Write-Host -f White "$FormattedMessage";
     
 }
 

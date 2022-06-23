@@ -37,7 +37,7 @@ class ScriptVersionData  {
             $this.relpath = $p
             $this.algo = $a
             $this.hash = $h
-            $this.updated = (get-date).GetDateTimeFormats()[9]
+            $this.updated = Get-Date
         }
         ScriptVersionData ([string]$name) {
             $this.ver = '1.0.0.0'
@@ -45,7 +45,7 @@ class ScriptVersionData  {
             $this.relpath = ''
             $this.algo = ''
             $this.hash = ''
-            $this.updated = (get-date).GetDateTimeFormats()[9]
+            $this.updated = Get-Date
         }
         ScriptVersionData () {
             $this.ver = ''
@@ -53,17 +53,32 @@ class ScriptVersionData  {
             $this.relpath = ''
             $this.algo = ''
             $this.hash = ''
-            $this.updated = (get-date).GetDateTimeFormats()[9]
+            $this.updated = Get-Date
         }
         [string] ToString( ) {
             return ("Version = `"{0}`"`nFileName = `"{1}`"`nRelativePath = `"{2}`"`nHash = `"{3}`"`nAlgo = `"{4}`"`n" -f $this.ver,$this.name,$this.relpath,$this.hash,$this.algo)
         }
+        [string] ToHash( ) {
+            [string]$ObjectStringValue = $this.ToString()
+            $algorithm = "SHA1"
+            $hashAlgorithm = [System.Security.Cryptography.HashAlgorithm]::Create($algorithm)
+            $md5StringBuilder = New-Object System.Text.StringBuilder 50
+            $ue = New-Object System.Text.UTF8Encoding
+            $hashAlgorithm.ComputeHash($ue.GetBytes($ObjectStringValue)) | 
+                % { [void] $md5StringBuilder.Append($_.ToString("x2")) }
+            $HashValue = $md5StringBuilder.ToString()
+            return $HashValue
+        }
         [string] ToCode( ) {
             return ("`$Script:D_Version = `"{0}`"`n`$Script:D_FileName = `"{1}`"`n`$Script:D_RelativePath = `"{2}`"`n`$Script:D_Hash = `"{3}`"`n`$Script:D_Algo = `"{4}`"`n" -f $this.ver,$this.name,$this.relpath,$this.hash,$this.algo)
         }
+        [string] GetFormattedDateTime( ) {
+             $StrDate = (Get-Date).ToString("yyyy:MM:dd")
+             return $StrDate
+        }
 
-        [string] UpdateDate( ) {
-            $this.updated = (get-date).GetDateTimeFormats()[9]
+        [string] UpdateDate( [DateTime]$newTime ) {
+            $this.updated = $newTime
             [string]$ret = $($this.updated).ToString()
             return $ret
         }
@@ -108,8 +123,7 @@ class ScriptVersionData  {
         [void] LoadFromCliXml( [string]$xmlpath ) {
             $Exists = Test-Path -Path $xmlpath -PathType Leaf -ErrorAction Ignore
             if(-not($Exists)) { throw "no such file" } 
-            $obj = Import-Clixml -Path $xmlpath
-            $obj | gm
+            $this = Import-Clixml -Path $xmlpath
         }
         [void] LoadFromJson( [string]$jsonpath ) {
             $Exists = Test-Path -Path $jsonpath -PathType Leaf -ErrorAction Ignore
@@ -135,7 +149,7 @@ class ScriptVersionData  {
             $this.DbgLog($logMessage)
 
             # Last step, add some content in this test file...
-            $tmpdate = (Get-Date).GetDateTimeFormats()[9]
+            $tmpdate = $this.GetFormattedDateTime( )
             $tmpname = $ENV:COMPUTERNAME
             [string]$tmpfilecontent = [string]::Format("`t == SCRIPT VERSION SYSTEM == `n`t ===========================`n`n This file was generated on {0} thinks that {1}!",$tmpdate,$tmpname)
             [int]$tmpcontentlen = $tmpfilecontent.Length
@@ -148,6 +162,9 @@ class ScriptVersionData  {
             $fi = Get-Item -Path "$TestFilename"
            
 
+            # lets use a date that can be agreed upon by different test checks.
+            [DateTime]$ObjectUpdatedTime = $fi.CreationTime
+
     
             $this.ver   = '9.9.8.8'
             $this.name  = $fi.Name
@@ -155,7 +172,7 @@ class ScriptVersionData  {
             $hd = Get-FileHash -Path $fi.Fullname
             $this.algo = $hd.Algorithm
             $this.hash = $hd.Hash
-            $this.updated = (get-date).GetDateTimeFormats()[9]
+            $this.updated = $ObjectUpdatedTime
         }
 
         [void] DbgLog( [string]$message ) {

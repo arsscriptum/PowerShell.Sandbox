@@ -124,8 +124,7 @@ function Initialize-ScriptVersionSystem{
 
 
 
-        $Null = Set-Variable -Name 'ScriptVersionSystem_OBJECT' -Value $Global:ScriptVersionObject -Scope Global -Force -Visibility Public -ErrorAction Stop -Option allscope, readonly
-
+        
 
     }catch{
         $InitializationErrorOccured = $True
@@ -144,6 +143,16 @@ function Initialize-ScriptVersionSystem{
         $Global:ScriptVersionMemberCount           = 0
         $Global:ScriptVersionActivationtime        = 0
         $Global:ScriptVersionObject  = $Null
+    }
+
+    if (  $InitializationErrorOccured -eq $False ){
+        try{
+           Write-Verbose "Setting Variable named`"ScriptVersionSystem_OBJECT`" in memory using Set-Variable"
+           Set-Variable -Name 'ScriptVersionSystem_OBJECT' -Value $Global:ScriptVersionObject -Scope Global -Force -Visibility Public -ErrorAction Stop -Option allscope, readonly 
+        }catch{
+            Write-ErrorMessage $_
+        }
+        
     }
 
     return $Global:ScriptVersionStatus
@@ -183,11 +192,77 @@ syslog "===== TestMain.ps1 ===== "
 syslog "test script is starting."
 
 
-syslog "right now I can tell that the inclusion of the ScriptVersion class definition was done and that the logs are working"
+syslog "============================================================"
+syslog "          -------------- PREPARATION --------------         "
+syslog "============================================================"
 
 
-syslog "lets try to Initialize the ScriptVersionSystem..."
 
-Initialize-ScriptVersionSystem
+syslog "`t`t -- Initialization..."
 
-syslog "done"
+$Result = Initialize-ScriptVersionSystem -Verbose
+
+syslog "`t`t -- > done. Result $$Result"
+
+
+
+syslog "============================================================"
+syslog "       -------------- LOAD TEST DATA --------------         "
+syslog "============================================================"
+
+
+$tmpObj = Get-ScriptVersionSystemObject
+$tmpObj.LoadTestData( )
+
+
+syslog "`t`t -- LoadTestData..."
+
+[string]$DataStr = $tmpObj.ToString()
+
+[string]$DataHash = $tmpObj.ToHash()
+
+syslog "============================================================"
+syslog "       -------------- VISUALIZE DATA --------------         "
+syslog "============================================================"
+
+
+syslog "`t`t -- Object as String --"
+syslog -i "$DataStr"
+syslog "`t`t -- Object as SHA1 Hash --"
+syslog -i "$DataHash"
+
+
+
+
+syslog "============================================================"
+syslog "       -------------- SERIALIZATION --------------         "
+syslog "============================================================"
+
+[string]$DataHash = $tmpObj.ToHash()
+
+syslog "Object before serialization"
+syslog -i "$DataHash"
+[string]$jfile = $tmpObj.ToCliXml()
+
+syslog "saved to json file `"$jfile`""
+$TmpObject = New-Object -TypeName ScriptVersionData -ErrorAction Stop
+
+syslog "loading from json file `"$jfile`" in new object"
+$TmpObject.LoadFromCliXml($jfile)
+
+[string]$DataHash = $TmpObject.ToHash()
+
+syslog "Object after serialization"
+syslog -i "$DataHash"
+
+[string]$DataStr = $tmpObj.ToString()
+
+syslog "`t`t -- Object 1 as String --"
+syslog -i "$DataStr"
+
+
+
+[string]$DataStr = $TmpObject.ToString()
+
+syslog "`t`t -- Object 2 as String --"
+syslog -i "$DataStr"
