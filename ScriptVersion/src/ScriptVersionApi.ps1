@@ -85,7 +85,7 @@ function Get-ScriptVersionSystemObject{
         Write-Verbose "  `$Global:ScriptVersionObject variable is null"   
     }
 
-    return $Global:ScriptVersionObject 
+    return $Global:ScriptVersionObject      
 }
 
 
@@ -187,7 +187,7 @@ function Destroy-ScriptVersionSystem{
 
 
 
-function Create-ScriptVersionFile{
+function New-ScriptVersionFile{
 
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -206,8 +206,6 @@ function Create-ScriptVersionFile{
         [String]$ScriptVersion = '1.0.0.0'
     ) 
 
-
-  
     [ScriptVersionData]$NewVer = New-Object -TypeName ScriptVersionData -ErrorAction Stop
 
      # Validate the declaration of the ScriptVersion object
@@ -223,8 +221,6 @@ function Create-ScriptVersionFile{
         $ExceptMsg=($formatstring -f $fields)
         Write-Verbose "Create-ScriptVersionFile FAILURE. Last Error message is $ExceptMsg"
     }
-
- 
 }
 
 function Get-ScriptVersion {
@@ -236,7 +232,6 @@ function Get-ScriptVersion {
         [Parameter(Mandatory=$false)]
         [String]$VersionFilePath
     )
-
 
     try{
         if ($PSBoundParameters.ContainsKey('ScriptPath')) {
@@ -261,16 +256,23 @@ function Get-ScriptVersion {
         }
 
 
-        
-        if(Test-Path -Path $VersionFilePath -PathType Leaf){
-             Write-Verbose "LoadFromCliXml $VersionFilePath"
-            $tmpObj.LoadFromCliXml( $VersionFilePath )
-        }else{
+    
+        if(-not(Test-Path -Path $VersionFilePath -PathType Leaf)){
             throw "missing  $VersionFilePath "
         }
+        [ScriptVersionData]$tmpObj = Import-Clixml $VersionFilePath
 
-        [ScriptVersionData]$obj = Import-Clixml $VersionFilePath
-        $v = $obj.GetVersion()
+        $FullPath = (Resolve-Path  (Join-Path $tmpObj.relpath $tmpObj.name)).Path
+        $CalcHash = (Get-FileHash -Path $FullPath -Algorithm $tmpObj.algo).hash
+        
+        Write-Verbose "`n`t == PATH == `n`tFullPath $FullPath`n`tRelPath $($tmpObj.relpath)`n`tFileName $($tmpObj.name)`n"
+        Write-Verbose "`n`t Hash 1 $CalcHash`n`t Hash 2 $($tmpObj.hash)`n`t Algo $($tmpObj.algo)`n"
+        
+        if($tmpObj.hash -ne $CalcHash){
+            throw "invalid hash"
+        }
+
+        $v = $tmpObj.GetVersion()
         return $v
     }
     catch{

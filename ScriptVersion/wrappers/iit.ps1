@@ -6,7 +6,7 @@ $s = Get-ScriptVersionSystemStatus
 Write-Host -n -f DarkRed "[ScriptVersionSystem] " ; Write-Host -f DarkYellow "status `t$s" 
 
 cd "P:\Scripts\PowerShell.Sandbox.Local\ScriptVersion\testdata"
-$p = Create-ScriptVersionFile "P:\Scripts\PowerShell.Sandbox.Local\ScriptVersion\testdata\Script.ps1"
+$p = New-ScriptVersionFile "P:\Scripts\PowerShell.Sandbox.Local\ScriptVersion\testdata\Script.ps1"
 
 Write-Host -n -f DarkRed "[ScriptVersionSystem] " ; Write-Host -f DarkYellow "path `t$p" 
 
