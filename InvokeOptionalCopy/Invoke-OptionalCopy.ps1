@@ -1,6 +1,23 @@
+<#
+#̷𝓍   𝓐𝓡𝓢 𝓢𝓒𝓡𝓘𝓟𝓣𝓤𝓜 
+#̷𝓍   
+#̷𝓍   Optional Copy. Powershell Reddit question
+#̷𝓍   
+#̷𝓍   I wrote this to help this dude on Reddit:
+#̷𝓍   https://www.reddit.com/r/PowerShell/comments/vv50w0/better_way_to_do_this/
+#̷𝓍   
+#̷𝓍   Get it here:
+#̷𝓍   https://github.com/arsscriptum/PowerShell.Sandbox/blob/main/InvokeOptionalCopy/Invoke-OptionalCopy.ps1
+#̷𝓍   
+#̷𝓍   <guillaumeplante.qc@gmail.com>
+#̷𝓍   https://arsscriptum.github.io/
+#>
 
-# Limit of 100 Megabytes (in Kb)
+
+# Files under this size will be copied
 $Script:Threshold = 100 * 1024
+
+# If set to $True, user will be ask for copy confirmation.
 $Script:AskConfirmation = $False
 
 function Write-CopyLog {
