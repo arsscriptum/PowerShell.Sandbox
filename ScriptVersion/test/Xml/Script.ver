@@ -1,0 +1,17 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>ScriptVersionData</T>
+      <T>System.Object</T>
+    </TN>
+    <ToString>Version = "1.0.0.1"_x000A_FileName = "Script.ps1"_x000A_RelativePath = "..\Xml"_x000A_Hash = "53FD523825B7B612C60D6C0F41BC3CCBB60464D4DD0E734622B49C9992883244"_x000A_Algo = "SHA256"_x000A_</ToString>
+    <Props>
+      <S N="ver">1.0.0.1</S>
+      <S N="name">Script.ps1</S>
+      <S N="relpath">..\Xml</S>
+      <S N="algo">SHA256</S>
+      <S N="hash">53FD523825B7B612C60D6C0F41BC3CCBB60464D4DD0E734622B49C9992883244</S>
+      <DT N="updated">2022-07-12T02:47:58.2409161-04:00</DT>
+    </Props>
+  </Obj>
+</Objs>

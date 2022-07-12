@@ -131,12 +131,35 @@ class ScriptVersionData  {
             $importedJson = [ScriptVersionData]::ConvertFromSerialization((get-content -path $jsonpath | convertfrom-json))
             $importedJson | gm
         }
+        [string] Create ([string]$p,[string]$v){
+
+            $fi = Get-Item -Path "$p"
+        
+            $VersionFilePath = Join-Path $fi.DirectoryName $fi.BaseName
+            $VersionFilePath += '.ver'
+            
+            [string]$logMessage = "Create -> Create version data file for script `"$p`"  `"$VersionFilePath`""
+            $this.DbgLog($logMessage)
+
+            # lets use a date that can be agreed upon by different test checks.
+            [DateTime]$ObjectUpdatedTime = $fi.CreationTime
+            $this.ver   = $v
+            $this.name  = $fi.Name
+            $this.relpath = Resolve-Path -Relative $fi.DirectoryName
+            $hd = Get-FileHash -Path $fi.Fullname
+            $this.algo = $hd.Algorithm
+            $this.hash = $hd.Hash
+            $this.updated = $ObjectUpdatedTime
+
+            Export-Clixml -InputObject $this -Path $VersionFilePath
+            return $VersionFilePath
+        }
         [void] LoadTestData( ) {
             # -- RANDOM FILENAME -- Generate a new file, with a random filename, for testing purposes...
             #    Generate a random filename using the GUID CmdLet
             [string]$NewName = (New-Guid).Guid
             $NewName = $NewName + ".txt"
-            [string]$TestFilename = Join-Path "$ENV:TEMP" $NewName
+            [string]$TestFilename = Join-Path "$ENV:TEMP\VersionTest" $NewName
 
             [string]$logMessage = "LoadTestData -> Generating file `"$TestFilename`""
             $this.DbgLog($logMessage)
@@ -175,6 +198,14 @@ class ScriptVersionData  {
             $this.updated = $ObjectUpdatedTime
         }
 
+        [version] GetVersion( ) {
+            [version]$ret = $this.ver
+            return $ret
+        }
+        [string] GetVersionString( ) {
+            [string]$ret = $this.ver
+            return $ret
+        }
         [void] DbgLog( [string]$message ) {
             
             $timestr = '{0}' -f ([system.string]::format('{0:HH.mm.ss}',(Get-Date))) 
