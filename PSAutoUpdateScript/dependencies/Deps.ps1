@@ -440,3 +440,13 @@ function Start-Admin{
     }
 }
 
+function Invoke-Nothing{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+    ) 
+    Register-Assemblies
+    Show-MessageBox 'EMPTY'
+}
+
+
+{}
