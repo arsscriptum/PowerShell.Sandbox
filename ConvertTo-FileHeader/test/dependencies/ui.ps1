@@ -87,16 +87,16 @@ function Show-Menu
     uimt '=======================================================            '; uimt "======================================`n" ; 
     uiml " 1. Encode Sample Data File                                        "; uimi "Hostname:                    $Script:HostName" -t;
     uiml " 2. Decode Header in Output File                                   "; uimi "Administrator                $Script:IsAdmin" -t;
-    uiml " 3. Open Output File                                               "; uimi "Network Status (is online)   $Script:IsOnline" -t;
-    uiml " 4. Open Sample Data File                                          "; uimi "IPv4 Address:                $Script:IPv4" -t;
-    uiml "                                                                   "; uimi "Test Mode                    $Script:TestMode`n" -m;
-    uiml "                                                                   "; uimi "Debug Mode                   $Script:Debug`n" -m;
+    uiml " 3. Open Sample Data File                                          "; uimi "                                            " -t;
+    uiml " 4. Open Output File                                               "; uimi "                                      " -t;
+    uiml "                                                                   "; uimi "                                        `n" -m;
+    uiml "                                                                   "; uimi "                                       `n" -m;
     uiml "                                                                   "; uimt " Script Information`n" -t
     uimt "                                                                   "; uimt "======================================`n"
-    uimi "A) Admin Mode                                                      " -s; uimi "Sample Data File Path:    $Script:SampleDataFile"
+    uimi "                                                                   " -s; uimi "Sample Data File Path:    $Script:SampleDataFile"
     uimi "                                                                   " -s; uimi "Output File Path          $Script:OutputFilePath"
     uimi "X) Exit                                                            " -s; uimi "Script Updated On         $Script:UpdatedString"
-    uiml "                                                                   "; uimi "Current Script GIT rev        $Script:CurrentGitRev"
+    uiml "                                                                   "; uimi "Current Script GIT rev       $Script:CurrentGitRev"
     
 }
 #//====================================================================================//

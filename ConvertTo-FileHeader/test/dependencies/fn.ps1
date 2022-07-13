@@ -31,10 +31,16 @@ function Invoke-EncodeSampleFile{
     #
 
     $StringVal = $RetVal | Out-String
-    Show-MessageBoxInfo "Generated Header written to $Script:OutputFilePath"
+    #Show-MessageBoxInfo "Generated Header written to $Script:OutputFilePath"
     
     Set-Content -Path $Script:OutputFilePath -Value $StringVal
     Invoke-Editor $Script:OutputFilePath 
+
+    $d = Get-Content -Path $Script:OutputFilePath 
+    $d = $d.Replace('#','')
+    $d = $d.Replace('<','')
+    $d = $d.Replace('>','')
+    Show-MessageBoxInfo "$d"
     Sleep 3
 }
 
