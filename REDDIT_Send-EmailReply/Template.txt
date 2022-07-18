@@ -1,0 +1,7 @@
+Hi!
+You have been selected to win a night out with your MOM. 
+Please use these information to access your mom appartment.
+client id: "__CLIENT_ID__" 
+client name: "__CLIENT_NAME__" 
+
+Have a good one
