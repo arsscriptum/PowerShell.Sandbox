@@ -29,7 +29,7 @@
 $Global:StartTag = "=== BEGIN FILE VERSION HEADER ==="
 $Global:EndTag  = "=== END FILE VERSION HEADER ==="
 $Global:HeaderStart = "<#`n $Global:StartTag `n"
-$Global:HeaderEnd = " $Global:EndTag `n#>"
+$Global:HeaderEnd = " $Global:EndTag #>"
 
 
 
@@ -98,7 +98,7 @@ function ConvertFrom-HeaderBlock {
         
     )
     $CompleteString = ''
-    $FileData = Get-Content -Path $Path -Raw
+    $FileData = Get-Content -Path $Path -Raw -Encoding 'UTF8'
     $index = $FileData.IndexOf($Global:StartTag)
     $endindex = $FileData.IndexOf($Global:EndTag)
     $index += 34
@@ -113,14 +113,14 @@ function ConvertFrom-HeaderBlock {
 
     For($i = $index ; $i -lt $endindex ; $i++){
         #$CompleteString += $CArray[$i]
-        if(($CArray[$i] -ne ' ') -and ($CArray[$i] -ne "`r")){
+        if(($CArray[$i] -ne ' ') -and ($CArray[$i])){
             [char]$c = $CArray[$i]
             $CompleteString += $c
         }
         #Write-Verbose "$CArray[$i]"
     }
 
-    $CompleteString = [string]::join("",($CompleteString.Split("`n")))
+ #   $CompleteString = [string]::join("",($CompleteString.Split("`n")))
    
 
     $ScriptBlockCompressed = [System.Convert]::FromBase64String($CompleteString)
@@ -137,7 +137,7 @@ function ConvertFrom-HeaderBlock {
 
     # Byte array to String
     [System.Text.Encoding] $Encoding = [System.Text.Encoding]::UTF8
-    [string]$s = $Encoding.GetString($ScriptBlockEncoded) | Out-String
+    [string]$s = $Encoding.GetString($ScriptBlockEncoded)
 
     return $s
 }
@@ -161,7 +161,7 @@ function ConvertTo-HeaderBlock {
         
     )
 
-    $FileData = Get-Content -Path $Path 
+    $FileData = Get-Content -Path $Path -Raw -Encoding 'UTF8'
     # Script block as String to Byte array
     [System.Text.Encoding] $Encoding = [System.Text.Encoding]::UTF8
     [Byte[]] $ScriptBlockEncoded = $Encoding.GetBytes($FileData)
@@ -179,7 +179,7 @@ function ConvertTo-HeaderBlock {
     $B64String = [System.Convert]::ToBase64String($ScriptBlockCompressed)
     [char[]] $CArray = $B64String.ToCharArray() 
     $Parts = Convert-ToSmallerArray $CArray -NumParts 30
-    $Parts | % { $HeaderData += "$_`n" }
+    $Parts | % { $HeaderData += "$_" }
     $HeaderData += $Global:HeaderEnd
 
     #Set-Content -Path "c:\Tmp\Header.txt" -Value $HeaderData
