@@ -28,8 +28,8 @@
 
 $Global:StartTag = "=== BEGIN FILE VERSION HEADER ==="
 $Global:EndTag  = "=== END FILE VERSION HEADER ==="
-$Global:HeaderStart = "<#`n $Global:StartTag `n"
-$Global:HeaderEnd = " $Global:EndTag #>"
+$Global:HeaderStart = "<# $Global:StartTag `n"
+$Global:HeaderEnd = "`n$Global:EndTag #>"
 
 
 
