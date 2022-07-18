@@ -15,6 +15,14 @@ I'm assuming most of this is do-able, but I really don't know where to start. Ad
 
 ## PROPOSED SOLUTION
 
+The problem can be divided in 3:
+
+1) Call the script: __EASY__ ou can add a OUTLOOK Rule to call a script when you receive an email
+2) Create the REPLY email: Using the provided script as a guide, you can create the reply email. Check the functio and the template file
+3) Send the email: Multiple possibilities. Not in the scope of this post. In the function, I use GOOGLE GMAIL.
+
+
+
 I have created 3 files, in FormatEmailReply.ps1, OnReceive.ps1 and Template.txt there's a function that you can modify to your needs, but the basis is there. You call
 
 ### FormatEmailReply.ps1
