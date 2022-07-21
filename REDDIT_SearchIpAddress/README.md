@@ -67,7 +67,7 @@ Function "Update-IPs" : Update all ip address to the same value.
 ```
     . ./SearchAndUpdateIP.ps1
     $Path = "HKCU:\SOFTWARE\DevelopmentSandbox\TestSettings"
-    Get-EntriesRecursively -Path $Path -Name 'IP Address'
+    Get-EntriesRecursively -Path $Path -Name 'IP Address'  -Verbose
 
     ... <10 entries after ran NewTestEntries>
 ```
@@ -75,5 +75,5 @@ Function "Update-IPs" : Update all ip address to the same value.
 Change all ips
 ```
     $Path = "HKCU:\SOFTWARE\DevelopmentSandbox\TestSettings"
-    Update-IPs -Path $Path -NewIP '1.1.1.1'
+    Update-IPs -Path $Path -NewIP '1.1.1.1' -Verbose
 ```
