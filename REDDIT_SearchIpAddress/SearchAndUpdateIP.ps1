@@ -81,7 +81,6 @@ function Get-EntriesRecursively {
 
             $c = (Get-Item "$Path\$Entry\*").Count
             if($c -gt 0){
-                $CurrentDepth++
                 $Null = Get-EntriesRecursively -Path "$Path\$Entry" -Name $Name -Results $Results
             }
         }
