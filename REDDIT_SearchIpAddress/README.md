@@ -5,6 +5,7 @@
 Task I'm trying to accomplish: recurse a registry hive and change a value. I won't necessarily know the full path of the hive I'm recursing.
 
 
+
 # SOLUTION
 
 ## __FIRST__
@@ -35,6 +36,8 @@ Change all ips
 
 ## __TEST__
 
+![ADD TEST ENTRIES](https://github.com/arsscriptum/PowerShell.Sandbox/raw/main/REDDIT_SearchIpAddress/img/1.png)
+
 ### File: NewTestEntries.ps1
 
 This script will add a bunch of entries in the registry path with IP Addresses. to test
@@ -63,6 +66,8 @@ This script will add a bunch of entries in the registry path with IP Addresses. 
 Function "Get-EntriesRecursively" : Get the list of entries recursively from the registry
 Function "Update-IPs" : Update all ip address to the same value.
 
+![LIST ENTRIES](https://github.com/arsscriptum/PowerShell.Sandbox/raw/main/REDDIT_SearchIpAddress/img/2.png)
+
 
 ```
     . ./SearchAndUpdateIP.ps1
@@ -72,8 +77,13 @@ Function "Update-IPs" : Update all ip address to the same value.
     ... <10 entries after ran NewTestEntries>
 ```
 
+![CHANGE ALL ENTRIES](https://github.com/arsscriptum/PowerShell.Sandbox/raw/main/REDDIT_SearchIpAddress/img/3.png)
+
 Change all ips
 ```
     $Path = "HKCU:\SOFTWARE\DevelopmentSandbox\TestSettings"
     Update-IPs -Path $Path -NewIP '1.1.1.1' -Verbose
 ```
+
+
+![VALIDATE CHANGES](https://github.com/arsscriptum/PowerShell.Sandbox/raw/main/REDDIT_SearchIpAddress/img/4.png)
