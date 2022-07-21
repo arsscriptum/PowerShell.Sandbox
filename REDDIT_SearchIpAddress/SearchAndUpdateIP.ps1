@@ -78,7 +78,7 @@ function Get-EntriesRecursively {
                $Null = Get-EntriesRecursively -Path "$Path\$Entry" -Name $Name -Results $Results
             }
         }
-    return $Results
+        return $Results
         
     }catch{
         Write-Error "$_"
@@ -109,7 +109,4 @@ function Update-IPs {
         Write-Error "$_"
 
     }        
-
-
-
 }
