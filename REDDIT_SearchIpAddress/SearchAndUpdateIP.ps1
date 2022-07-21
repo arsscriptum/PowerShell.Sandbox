@@ -48,22 +48,28 @@ function Get-EntriesRecursively {
      [string]$Name,
      [parameter(Mandatory=$false)]
      [System.Collections.ArrayList]$Results
-
     )
-
+    
     try{
+        $CurrentDepth = 1
         if($Results -eq $Null){
+            Set-Variable -Name "RegRoot" -Value "$Path" -Scope Global -ErrorAction Ignore
             $Results = [System.Collections.ArrayList]::new()
-            Write-Verbose "Created Results"
+        }else{
+            $CurrentDepth = [regex]::matches($($Path.Replace($(Get-Variable -Name "RegRoot" -ValueOnly),'')),"\\").Count
         }
         $AllChilds=(Get-Item "$Path\*").PSChildName
         $AllChildsCount=$AllChilds.Count
-
+        if($AllChildsCount -gt 0){
+            $Spaces = '    '
+            For($i = 0 ; $i -lt $CurrentDepth ; $i++){$Spaces += '    '}   
+            Write-Verbose "$Spaces|---| + $AllChildsCount subkey in $Path"
+        }
         foreach($Entry in $AllChilds){
             $exists=Test-RegistryValue "$Path\$Entry" "$Name"
             if($exists){
                 $Value=(Get-ItemProperty "$Path\$Entry")."$Name"
-                Write-Verbose "Found $Name [$Value]"
+                Write-Verbose "    $Spaces---> Found $Name [$Value]"
                 [pscustomobject]$o = @{
                     Path = "$Path\$Entry"
                     Name = $Name
@@ -75,9 +81,11 @@ function Get-EntriesRecursively {
 
             $c = (Get-Item "$Path\$Entry\*").Count
             if($c -gt 0){
-               $Null = Get-EntriesRecursively -Path "$Path\$Entry" -Name $Name -Results $Results
+                $CurrentDepth++
+                $Null = Get-EntriesRecursively -Path "$Path\$Entry" -Name $Name -Results $Results
             }
         }
+
         return $Results
         
     }catch{
@@ -107,6 +115,6 @@ function Update-IPs {
         }
     }catch{
         Write-Error "$_"
-
+        
     }        
 }
